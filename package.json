@@ -1,0 +1,29 @@
+{
+  "name": "formr",
+  "version": "1.0.0",
+  "description": "A fluent browser-side JavaScript form validator",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/betaWeb/formr.git"
+  },
+  "keywords": [
+    "form",
+    "form-validator",
+    "javascript",
+    "browser-side",
+    "fluent",
+    "es6",
+    "es5",
+    "es2015"
+  ],
+  "author": "BetaWeb <betaweb34@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/betaWeb/formr/issues"
+  },
+  "homepage": "https://github.com/betaWeb/formr#readme"
+}
