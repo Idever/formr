@@ -49,63 +49,30 @@ class Formr {
       const value = this._getValue(key)
       if (
         value === undefined || 
-        (this._isString(value) && !value.length)
+        (this._isString(value) && value.length === 0)
       ) this._addError(key, 'required')
     }
     return this
   }
 
   string () {
-    if (arguments.length > 1) {
-      for (let i = 0; i < arguments.length; i++) {
-        this.string(arguments[i])
-      }
-    } else {
-      const [key,] = arguments
-      const value = this._getValue(key)
-      if (!this._isString(value)) this._addError(key, 'string')
-    }
+    this._callMultipleArgsMethod('string', arguments)
     return this
   }
 
 
   number () {
-    if (arguments.length > 1) {
-      for (let i = 0; i < arguments.length; i++) {
-        this.number(arguments[i])
-      }
-    } else {
-      const [key,] = arguments
-      const value = this._getValue(key)
-      if (!this._isNumber(value)) this._addError(key, 'number')
-    }
+    this._callMultipleArgsMethod('number', arguments)
     return this
   }
 
   boolean () {
-    if (arguments.length > 1) {
-      for (let i = 0; i < arguments.length; i++) {
-        this.boolean(arguments[i])
-      }
-    } else {
-      const [key,] = arguments
-      const value = this._getValue(key)
-      if (!this._isBoolean(value)) this._addError(key, 'boolean')
-    }
+    this._callMultipleArgsMethod('boolean', arguments)
     return this
   }
 
   email () {
-    if (arguments.length > 1) {
-      for (let i = 0; i < arguments.length; i++) {
-        this.string(arguments[i])
-      }
-    } else {
-      const [key,] = arguments
-      const value = this._getValue(key)
-      if (!(email_regexp.test(value)))
-        this._addError(key, 'email')
-    }
+    this._callMultipleArgsMethod('email', arguments)
     return this
   }
 
@@ -209,6 +176,15 @@ class Formr {
     return false
   }
 
+  _isEmail (value) {
+    try {
+      return email_regexp.test(value)
+    } catch (e) {
+      console.error(e)
+    }
+    return false
+  }
+
   _normalizeData (data = {}) {
     let arr = []
     if (Object.keys(data).length) {
@@ -220,6 +196,20 @@ class Formr {
       }
     }
     return arr
+  }
+
+  _callMultipleArgsMethod (rule_name, args = []) {
+    if (args.length > 1) {
+      for (let i = 0; i < args.length; i++) {
+        this[rule_name](args[i])
+      }
+    } else {
+      const [key,] = args
+      const value = this._getValue(key)
+      const _assert_method_name = `_is${rule_name.charAt(0).toUpperCase() + rule_name.slice(1)}`
+      if (this[_assert_method_name] !== undefined && this[_assert_method_name](value) === false) this._addError(key, fn)
+    }
+    return this
   }
 }
 

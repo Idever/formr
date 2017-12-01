@@ -90,6 +90,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 "use strict";
 
 
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -146,72 +148,32 @@ var Formr = function () {
             key = _arguments[0];
 
         var value = this._getValue(key);
-        if (value === undefined || this._isString(value) && !value.length) this._addError(key, 'required');
+        if (value === undefined || this._isString(value) && value.length === 0) this._addError(key, 'required');
       }
       return this;
     }
   }, {
     key: 'string',
     value: function string() {
-      if (arguments.length > 1) {
-        for (var i = 0; i < arguments.length; i++) {
-          this.string(arguments[i]);
-        }
-      } else {
-        var _arguments2 = Array.prototype.slice.call(arguments),
-            key = _arguments2[0];
-
-        var value = this._getValue(key);
-        if (!this._isString(value)) this._addError(key, 'string');
-      }
+      this._callMultipleArgsMethod('string', arguments);
       return this;
     }
   }, {
     key: 'number',
     value: function number() {
-      if (arguments.length > 1) {
-        for (var i = 0; i < arguments.length; i++) {
-          this.number(arguments[i]);
-        }
-      } else {
-        var _arguments3 = Array.prototype.slice.call(arguments),
-            key = _arguments3[0];
-
-        var value = this._getValue(key);
-        if (!this._isNumber(value)) this._addError(key, 'number');
-      }
+      this._callMultipleArgsMethod('number', arguments);
       return this;
     }
   }, {
     key: 'boolean',
     value: function boolean() {
-      if (arguments.length > 1) {
-        for (var i = 0; i < arguments.length; i++) {
-          this.boolean(arguments[i]);
-        }
-      } else {
-        var _arguments4 = Array.prototype.slice.call(arguments),
-            key = _arguments4[0];
-
-        var value = this._getValue(key);
-        if (!this._isBoolean(value)) this._addError(key, 'boolean');
-      }
+      this._callMultipleArgsMethod('boolean', arguments);
       return this;
     }
   }, {
     key: 'email',
     value: function email() {
-      if (arguments.length > 1) {
-        for (var i = 0; i < arguments.length; i++) {
-          this.string(arguments[i]);
-        }
-      } else {
-        var _arguments5 = Array.prototype.slice.call(arguments),
-            key = _arguments5[0];
-
-        var value = this._getValue(key);
-        if (!email_regexp.test(value)) this._addError(key, 'email');
-      }
+      this._callMultipleArgsMethod('email', arguments);
       return this;
     }
   }, {
@@ -321,6 +283,16 @@ var Formr = function () {
       return false;
     }
   }, {
+    key: '_isEmail',
+    value: function _isEmail(value) {
+      try {
+        return email_regexp.test(value);
+      } catch (e) {
+        console.error(e);
+      }
+      return false;
+    }
+  }, {
     key: '_normalizeData',
     value: function _normalizeData() {
       var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -335,6 +307,25 @@ var Formr = function () {
         }
       }
       return arr;
+    }
+  }, {
+    key: '_callMultipleArgsMethod',
+    value: function _callMultipleArgsMethod(rule_name) {
+      var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+
+      if (args.length > 1) {
+        for (var i = 0; i < args.length; i++) {
+          this[rule_name](args[i]);
+        }
+      } else {
+        var _args = _slicedToArray(args, 1),
+            key = _args[0];
+
+        var value = this._getValue(key);
+        var _assert_method_name = '_is' + (rule_name.charAt(0).toUpperCase() + rule_name.slice(1));
+        if (this[_assert_method_name] !== undefined && this[_assert_method_name](value) === false) this._addError(key, fn);
+      }
+      return this;
     }
   }]);
 
