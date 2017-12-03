@@ -96,18 +96,23 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var email_regexp = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+var EMAIL_REGEXP = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+var DEFAULT_SETTINGS = {
+  debug: false,
+  test_mode: false // false|browser|server|both
+};
 
 var Formr = function () {
-  function Formr(form) {
+  function Formr(data) {
+    var settings = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
     _classCallCheck(this, Formr);
 
-    if (!form) throw new Error('Formr :: form is not defined');
+    if (!data) throw new Error('Formr :: data is not defined');
 
-    this._data = [];
-
-    this._data = window === undefined || window && (!window.HTMLFormElement || form.constructor !== window.HTMLFormElement) ? this._normalizeData(form) : form.elements;
-
+    this._isHTMLFormElement = false;
+    this._data = data;
+    this._settings = Object.assign({}, DEFAULT_SETTINGS, settings);
     this._values = {};
     this._errors = {};
     this._messages = {
@@ -121,8 +126,14 @@ var Formr = function () {
       'under': 'La valeur de ce champ doit être:strict inférieure à :max',
       'above': 'La valeur de ce champ doit être:strict supérieure à :min',
       'same': 'La valeur ":value" est différente celle attendue ":expected"',
-      'in': 'Seuls les valeurs ":values" sont autorisées pour ce champ'
+      'in': 'Seuls les valeurs ":values" sont autorisées pour ce champ',
+      'checked': 'Ce champ doit être coché',
+      'unchecked': 'Ce champ ne doit pas être coché',
+      'image': 'Format de fichier invalide (acceptés: :accepted_mimetypes)',
+      'type': 'Le fichier doit être de type ":mimetype"'
     };
+
+    this._initData();
     this._fillValues();
   }
 
@@ -177,6 +188,42 @@ var Formr = function () {
       return this;
     }
   }, {
+    key: 'checked',
+    value: function checked(key) {
+      var expected = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+      var value = this._getValue(key);
+      if (value != expected) this._addError(key, expected === true ? 'checked' : 'unchecked');
+      return this;
+    }
+  }, {
+    key: 'image',
+    value: function image(key) {
+      var accepted_mimetypes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ['jpg', 'jpeg', 'png', 'svg', 'tiff', 'bmp', 'gif'];
+
+      if (this._isHTMLFormElement || this._settings.test_mode !== false) {
+        var value = this._getValue(key);
+        var re = new RegExp(accepted_mimetypes.join('|'), 'i');
+        if (!re.test(value.type)) this._addError(key, 'image', { accepted_mimetypes: accepted_mimetypes.join(',') });
+      }
+      return this;
+    }
+  }, {
+    key: 'type',
+    value: function type(key, mimetype) {
+      if (this._isHTMLFormElement || this._settings.test_mode !== false) {
+        var value = this._getValue(key);
+        if (value.type !== mimetype) this._addError(key, 'type', { mimetype: mimetype });
+      }
+    }
+
+    /*size (key, size = 0) {
+      if (this._isHTMLFormElement) {
+        
+      }
+    }*/
+
+  }, {
     key: 'in',
     value: function _in(key, constraints) {
       var value = this._getValue(key);
@@ -200,7 +247,7 @@ var Formr = function () {
       var strict = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
       var value = Number(this._getValue(key));
-      if (this._isNumber(value) && (strict && value > max || !strict && value >= max)) this._addError(key, 'under', { ':max': max, ':strict': strict ? ' strictement' : '' });
+      if (this._isNumber(value) && (strict && value > max || !strict && value >= max)) this._addError(key, 'under', { ':max': max, ':strict': !strict ? ' strictement' : '' });
       return this;
     }
   }, {
@@ -210,7 +257,8 @@ var Formr = function () {
       var strict = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
       var value = Number(this._getValue(key));
-      if (this._isNumber(value) && (strict && value < min || !strict && value <= min)) this._addError(key, 'above', { ':min': min, ':strict': strict ? ' strictement' : '' });
+
+      if (this._isNumber(value) && (strict && value < min || !strict && value <= min)) this._addError(key, 'above', { ':min': min, ':strict': !strict ? ' strictement' : '' });
       return this;
     }
   }, {
@@ -286,7 +334,7 @@ var Formr = function () {
     key: '_isEmail',
     value: function _isEmail(value) {
       try {
-        return email_regexp.test(value);
+        return EMAIL_REGEXP.test(value);
       } catch (e) {
         console.error(e);
       }
@@ -295,18 +343,24 @@ var Formr = function () {
   }, {
     key: '_normalizeData',
     value: function _normalizeData() {
-      var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
       var arr = [];
-      if (Object.keys(data).length) {
-        for (var name in data) {
+      if (Object.keys(this._data).length) {
+        for (var field in this._data) {
           arr.push({
-            name: name,
-            value: data[name]
+            name: field,
+            value: this._data[field]
           });
         }
       }
-      return arr;
+      this._data = arr;
+    }
+  }, {
+    key: '_initData',
+    value: function _initData() {
+      if (window !== undefined && this._data.constructor === window.HTMLFormElement) {
+        this._isHTMLFormElement = true;
+        this._data = this._data.elements;
+      } else if (this._data.constructor === Object) this._normalizeData();else throw new Error('Formr :: data must be a valid HTML form Element or a valid Javascript Object');
     }
   }, {
     key: '_callMultipleArgsMethod',
@@ -325,6 +379,14 @@ var Formr = function () {
         var _assert_method_name = '_is' + (rule_name.charAt(0).toUpperCase() + rule_name.slice(1));
         if (this[_assert_method_name] !== undefined && this[_assert_method_name](value) === false) this._addError(key, fn);
       }
+      return this;
+    }
+  }, {
+    key: 'messages',
+    value: function messages() {
+      var _messages = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+      this._messages = Object.assign({}, this._messages, _messages);
       return this;
     }
   }]);

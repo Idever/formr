@@ -1,18 +1,19 @@
 'use strict'
 
-const email_regexp = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/
+const EMAIL_REGEXP = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/
+const DEFAULT_SETTINGS = {
+  debug: false,
+  test_mode: false // false|browser|server|both
+}
 
 class Formr {
   
-  constructor (form) {
-    if (!form) throw new Error('Formr :: form is not defined')
+  constructor (data, settings = {}) {
+    if (!data) throw new Error('Formr :: data is not defined')
 
-    this._data = []
-
-    this._data = window === undefined || (window && (!window.HTMLFormElement || form.constructor !== window.HTMLFormElement))
-      ? this._normalizeData(form)
-      : form.elements
-
+    this._isHTMLFormElement = false
+    this._data = data
+    this._settings = Object.assign({}, DEFAULT_SETTINGS, settings)
     this._values = {}
     this._errors = {}
     this._messages = {
@@ -26,8 +27,14 @@ class Formr {
       'under': 'La valeur de ce champ doit être:strict inférieure à :max',
       'above': 'La valeur de ce champ doit être:strict supérieure à :min',
       'same': 'La valeur ":value" est différente celle attendue ":expected"',
-      'in': 'Seuls les valeurs ":values" sont autorisées pour ce champ'
+      'in': 'Seuls les valeurs ":values" sont autorisées pour ce champ',
+      'checked': 'Ce champ doit être coché',
+      'unchecked': 'Ce champ ne doit pas être coché',
+      'image': 'Format de fichier invalide (acceptés: :accepted_mimetypes)',
+      'type': 'Le fichier doit être de type ":mimetype"',
     }
+    
+    this._initData()
     this._fillValues()
   }
 
@@ -76,6 +83,35 @@ class Formr {
     return this
   }
 
+  checked (key, expected = true) {
+    const value = this._getValue(key)
+    if (value != expected)
+      this._addError(key, expected === true ? 'checked' : 'unchecked')
+    return this
+  }
+  
+  image (key, accepted_mimetypes = ['jpg', 'jpeg', 'png', 'svg', 'tiff', 'bmp', 'gif']) {
+    if (this._isHTMLFormElement || this._settings.test_mode !== false) {
+      const value = this._getValue(key)
+      const re = new RegExp(accepted_mimetypes.join('|'), 'i')
+      if (!re.test(value.type)) this._addError(key, 'image', { accepted_mimetypes: accepted_mimetypes.join(',')  })
+    }
+    return this
+  }
+
+  type (key, mimetype) {
+    if (this._isHTMLFormElement || this._settings.test_mode !== false) {
+      const value = this._getValue(key)
+      if (value.type !== mimetype) this._addError(key, 'type', { mimetype })
+    }
+  }
+
+  /*size (key, size = 0) {
+    if (this._isHTMLFormElement) {
+      
+    }
+  }*/
+
   in (key, constraints) {
     const value = this._getValue(key)
     if (!Array.isArray(constraints, value))
@@ -98,17 +134,18 @@ class Formr {
       this._isNumber(value) &&
       ((strict && value > max) ||
       (!strict && value >= max))
-    ) this._addError(key, 'under', {':max': max, ':strict': strict ? ' strictement' : ''})
+    ) this._addError(key, 'under', {':max': max, ':strict': !strict ? ' strictement' : ''})
     return this
   }
 
   above (key, min = 0, strict = false) {
     const value = Number(this._getValue(key))
+
     if (
       this._isNumber(value) &&
       ((strict && value < min) ||
       (!strict && value <= min))
-    ) this._addError(key, 'above', {':min': min, ':strict': strict ? ' strictement' : ''})
+    ) this._addError(key, 'above', {':min': min, ':strict': !strict ? ' strictement' : ''})
     return this
   }
 
@@ -178,24 +215,34 @@ class Formr {
 
   _isEmail (value) {
     try {
-      return email_regexp.test(value)
+      return EMAIL_REGEXP.test(value)
     } catch (e) {
       console.error(e)
     }
     return false
   }
 
-  _normalizeData (data = {}) {
+  _normalizeData () {
     let arr = []
-    if (Object.keys(data).length) {
-      for (let name in data) {
+    if (Object.keys(this._data).length) {
+      for (let field in this._data) {
         arr.push({
-          name: name,
-          value: data[name]
+          name: field,
+          value: this._data[field]
         })
       }
     }
-    return arr
+    this._data = arr
+  }
+
+  _initData () {
+    if (window !== undefined && this._data.constructor === window.HTMLFormElement) {
+      this._isHTMLFormElement = true
+      this._data = this._data.elements
+    } else if (this._data.constructor === Object)
+      this._normalizeData()
+    else
+      throw new Error('Formr :: data must be a valid HTML form Element or a valid Javascript Object')
   }
 
   _callMultipleArgsMethod (rule_name, args = []) {
@@ -209,6 +256,11 @@ class Formr {
       const _assert_method_name = `_is${rule_name.charAt(0).toUpperCase() + rule_name.slice(1)}`
       if (this[_assert_method_name] !== undefined && this[_assert_method_name](value) === false) this._addError(key, fn)
     }
+    return this
+  }
+
+  messages (messages = {}) {
+    this._messages = Object.assign({}, this._messages, messages)
     return this
   }
 }
