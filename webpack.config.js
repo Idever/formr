@@ -21,8 +21,21 @@ let config = {
 
   devtool: false,
 
+  resolve: {
+    modules: [
+      path.resolve(__dirname),
+      path.resolve('./node_modules')
+    ]
+  },
+
   module: {
     rules: [
+      /*{
+        enforce: "pre",
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: "eslint-loader",
+      },*/
       {
         test: /\.js$/,
         exclude: /(node_modules|bower_components)/,

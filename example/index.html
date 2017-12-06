@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Formr</title>
+</head>
+<body>
+  <form name="awesome-form" action="" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="_csfr" value="5d4d5f48ef4ef4s56">
+    <p>
+      <label for="id">ID *</label><br>
+      <input type="number" id="id" name="id">
+    </p>
+    <p>
+      <label for="title">Titre *</label><br>
+      <input type="text" id="title" name="title">
+    </p>
+    <p>
+      <label for="image">Photo</label><br>
+      <input type="file" name="image" id="image" />
+    </p>
+    <p>
+      <label for="content">Message *</label><br>
+      <textarea name="content" id="content" cols="30" rows="10"></textarea>
+    </p>
+    <p>
+      <label for="published">Publier</label><br>
+      <input type="checkbox" value="off" name="published" id="published" />
+    </p>
+    <p>
+    <button type="submit">Envoyer</button>
+    </p>
+  </form>
+
+  <script src="../dist/formr.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

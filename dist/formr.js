@@ -60,28 +60,36 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__src_Formr__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__src_Formr___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__src_Formr__);
 
 
-(function (w) {
-  if (w !== undefined) {
-    if (!w.Formr) {
-      w.Formr = __WEBPACK_IMPORTED_MODULE_0__src_Formr___default.a;
-    }
-  }
-})(window, undefined);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
-/* harmony default export */ __webpack_exports__["default"] = (__WEBPACK_IMPORTED_MODULE_0__src_Formr___default.a);
+var _helpers = __webpack_require__(1);
+
+var _helpers2 = _interopRequireDefault(_helpers);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var BaseRule = function BaseRule(value) {
+  _classCallCheck(this, BaseRule);
+
+  this.value = value;
+  this.helpers = _helpers2.default;
+};
+
+exports.default = BaseRule;
 
 /***/ }),
 /* 1 */
@@ -90,16 +98,151 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 "use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var EMAIL_REGEXP = exports.EMAIL_REGEXP = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+
+exports.default = {
+  _isString: function _isString(value) {
+    try {
+      return value.constructor && value.constructor === String || typeof value === "string";
+    } catch (e) {
+      console.error(e);
+    }
+    return false;
+  },
+  _isNumber: function _isNumber(value) {
+    try {
+      return value.constructor && value.constructor === Number || typeof value === "number";
+    } catch (e) {
+      console.error(e);
+    }
+    return false;
+  },
+  _isBoolean: function _isBoolean(value) {
+    try {
+      return value.constructor && value.constructor === Boolean || typeof value === "boolean";
+    } catch (e) {
+      console.error(e);
+    }
+    return false;
+  },
+  _isEmail: function _isEmail(value) {
+    try {
+      return EMAIL_REGEXP.test(value);
+    } catch (e) {
+      console.error(e);
+    }
+    return false;
+  },
+  _isFunction: function _isFunction(value) {
+    try {
+      return value.constructor && value.constructor === Function || typeof value === "function";
+    } catch (e) {
+      console.error(e);
+    }
+    return false;
+  },
+  _isInt: function _isInt(value) {
+    return !isNaN(Number(value));
+  },
+  _isStr: function _isStr(value) {
+    return !this._isInt(value) && this._isString(value);
+  },
+  _capitalize: function _capitalize(value) {
+    return "" + value.charAt(0).toUpperCase() + value.slice(1);
+  }
+};
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _Formr = __webpack_require__(3);
+
+var _Formr2 = _interopRequireDefault(_Formr);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+(function (w) {
+  if (w !== undefined) {
+    __webpack_require__(11);
+    if (!w.Formr) {
+      w.Formr = _Formr2.default;
+    }
+  }
+})(window, undefined);
+
+exports.default = _Formr2.default;
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _helpers = __webpack_require__(1);
+
+var _helpers2 = _interopRequireDefault(_helpers);
+
+var _RequiredRule = __webpack_require__(4);
+
+var _RequiredRule2 = _interopRequireDefault(_RequiredRule);
+
+var _StringRule = __webpack_require__(5);
+
+var _StringRule2 = _interopRequireDefault(_StringRule);
+
+var _NumberRule = __webpack_require__(6);
+
+var _NumberRule2 = _interopRequireDefault(_NumberRule);
+
+var _BooleanRule = __webpack_require__(7);
+
+var _BooleanRule2 = _interopRequireDefault(_BooleanRule);
+
+var _EmailRule = __webpack_require__(8);
+
+var _EmailRule2 = _interopRequireDefault(_EmailRule);
+
+var _CheckedRule = __webpack_require__(9);
+
+var _CheckedRule2 = _interopRequireDefault(_CheckedRule);
+
+var _ImageRule = __webpack_require__(10);
+
+var _ImageRule2 = _interopRequireDefault(_ImageRule);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var EMAIL_REGEXP = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 var DEFAULT_SETTINGS = {
   debug: false,
-  test_mode: false // false|browser|server|both
+  test_mode: false, // false|browser|server|both,
+  observe_event: 'keyup',
+  validate_before_submit: true
 };
 
 var Formr = function () {
@@ -112,9 +255,20 @@ var Formr = function () {
 
     this._isHTMLFormElement = false;
     this._data = data;
-    this._settings = Object.assign({}, DEFAULT_SETTINGS, settings);
+    this._settings = _extends({}, DEFAULT_SETTINGS, settings);
     this._values = {};
     this._errors = {};
+    this._rules = {};
+    this._observers = {};
+    this._validators = {
+      'required': _RequiredRule2.default,
+      'string': _StringRule2.default,
+      'number': _NumberRule2.default,
+      'boolean': _BooleanRule2.default,
+      'email': _EmailRule2.default,
+      'checked': _CheckedRule2.default,
+      'image': _ImageRule2.default
+    };
     this._messages = {
       'required': 'Ce champ est requis',
       'string': 'Ce champ doit être une chaîne de caractères valide',
@@ -129,12 +283,16 @@ var Formr = function () {
       'in': 'Seuls les valeurs ":values" sont autorisées pour ce champ',
       'checked': 'Ce champ doit être coché',
       'unchecked': 'Ce champ ne doit pas être coché',
-      'image': 'Format de fichier invalide (acceptés: :accepted_mimetypes)',
-      'type': 'Le fichier doit être de type ":mimetype"'
+      'image': 'Format de fichier invalide (acceptés: :acceptedMimetypes)',
+      'type': 'Le fichier doit être de type ":mimetype"',
+      'size': 'La taille du fichier ne doit pas excéder :size Mo'
     };
 
     this._initData();
+    this._form = this._isHTMLFormElement ? data : null;
     this._fillValues();
+
+    if (this._settings.messages) this.messages(this._settings.message);
   }
 
   _createClass(Formr, [{
@@ -148,6 +306,19 @@ var Formr = function () {
       return this._errors;
     }
   }, {
+    key: 'resetErrors',
+    value: function resetErrors() {
+      this._errors = [];
+    }
+  }, {
+    key: 'messages',
+    value: function messages() {
+      var _messages = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+      this._messages = _extends({}, this._messages, _messages);
+      return this;
+    }
+  }, {
     key: 'required',
     value: function required() {
       if (arguments.length > 1) {
@@ -159,7 +330,9 @@ var Formr = function () {
             key = _arguments[0];
 
         var value = this._getValue(key);
-        if (value === undefined || this._isString(value) && value.length === 0) this._addError(key, 'required');
+        this._addRule(key, 'required');
+
+        if (!this._validate('required', key, value)) this._addError(key, 'required');
       }
       return this;
     }
@@ -192,19 +365,22 @@ var Formr = function () {
     value: function checked(key) {
       var expected = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
-      var value = this._getValue(key);
-      if (value != expected) this._addError(key, expected === true ? 'checked' : 'unchecked');
+      var element = this._getHtmlElement(key);
+      this._addRule(key, 'checked', [expected]);
+
+      if (!this._validate('checked', key, element ? Boolean(element.checked) : false, [expected])) this._addError(key, expected ? 'checked' : 'unchecked');
       return this;
     }
   }, {
     key: 'image',
     value: function image(key) {
-      var accepted_mimetypes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ['jpg', 'jpeg', 'png', 'svg', 'tiff', 'bmp', 'gif'];
+      var acceptedMimetypes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
 
       if (this._isHTMLFormElement || this._settings.test_mode !== false) {
         var value = this._getValue(key);
-        var re = new RegExp(accepted_mimetypes.join('|'), 'i');
-        if (!re.test(value.type)) this._addError(key, 'image', { accepted_mimetypes: accepted_mimetypes.join(',') });
+        this._addRule(key, 'image', [acceptedMimetypes]);
+
+        if (!this._validate('image', key, value, [acceptedMimetypes])) this._addError(key, 'image', { acceptedMimetypes: acceptedMimetypes.join(',') });
       }
       return this;
     }
@@ -213,20 +389,32 @@ var Formr = function () {
     value: function type(key, mimetype) {
       if (this._isHTMLFormElement || this._settings.test_mode !== false) {
         var value = this._getValue(key);
+        this._addRule(key, 'type', [mimetype]);
+
         if (value.type !== mimetype) this._addError(key, 'type', { mimetype: mimetype });
       }
     }
+  }, {
+    key: 'size',
+    value: function size(key) {
+      var _size = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 
-    /*size (key, size = 0) {
-      if (this._isHTMLFormElement) {
-        
+      if (this._isHTMLFormElement || this._settings.test_mode !== false) {
+        var value = this._getValue(key);
+        this._addRule(key, 'size', [_size]);
+
+        if (value.size < _size) this._addError(key, 'size', { size: _size });
       }
-    }*/
-
+      return this;
+    }
   }, {
     key: 'in',
-    value: function _in(key, constraints) {
+    value: function _in(key) {
+      var constraints = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+
       var value = this._getValue(key);
+      this._addRule(key, 'in', [constraints]);
+
       if (!Array.isArray(constraints, value)) this._addError(key, 'in', { ':values': constraints.join(',') });
       return this;
     }
@@ -237,7 +425,10 @@ var Formr = function () {
       var max = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
 
       var value = this._getValue(key);
-      if (this._isString(value) && (value.length < min || value.length > max) || this._isNumber(value) && (value < min || value > max)) this._addError(key, 'length', { ':min': min, ':max': max });
+      var isInt = _helpers2.default._isInt(value);
+      this._addRule(key, 'between', [min, max]);
+
+      if (_helpers2.default._isStr(value) && (value.length < min || value.length > max) || isInt && (value < min || value > max)) this._addError(key, isInt ? 'between' : 'length', { ':min': min, ':max': max });
       return this;
     }
   }, {
@@ -247,7 +438,9 @@ var Formr = function () {
       var strict = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
       var value = Number(this._getValue(key));
-      if (this._isNumber(value) && (strict && value > max || !strict && value >= max)) this._addError(key, 'under', { ':max': max, ':strict': !strict ? ' strictement' : '' });
+      this._addRule(key, 'under', [max, strict]);
+
+      if (_helpers2.default._isNumber(value) && (strict && value > max || !strict && value >= max)) this._addError(key, 'under', { ':max': max, ':strict': !strict ? ' strictement' : '' });
       return this;
     }
   }, {
@@ -257,8 +450,9 @@ var Formr = function () {
       var strict = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
       var value = Number(this._getValue(key));
+      this._addRule(key, 'above', [min, strict]);
 
-      if (this._isNumber(value) && (strict && value < min || !strict && value <= min)) this._addError(key, 'above', { ':min': min, ':strict': !strict ? ' strictement' : '' });
+      if (_helpers2.default._isNumber(value) && (strict && value < min || !strict && value <= min)) this._addError(key, 'above', { ':min': min, ':strict': !strict ? ' strictement' : '' });
       return this;
     }
   }, {
@@ -268,13 +462,123 @@ var Formr = function () {
       var strict = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
       var value = Number(this._getValue(key));
+      this._addRule(key, 'same', [comparisonValue, strict]);
+
       if (!strict && comparisonValue != value || strict && comparisonValue !== value) this._addError(key, 'same', { ':expected': value, ':value': comparisonValue });
       return this;
+    }
+  }, {
+    key: 'validateAll',
+    value: function validateAll() {
+      this._applyRules(true);
+      return this;
+    }
+  }, {
+    key: 'validate',
+    value: function validate() {
+      if (!arguments.length) this.validateAll();else {
+        this.resetErrors();
+        Array.from(arguments).forEach(this._applyRule.bind(this));
+      }
+      return this;
+    }
+  }, {
+    key: 'observe',
+    value: function observe() {
+      var _this = this;
+
+      if (!arguments.length || _helpers2.default._isFunction(arguments[0])) throw new Error('Formr.observe :: You must specify at least one field to observe');
+      if (this._isHTMLFormElement) {
+        var args = Array.from(arguments);
+        var callback = args.pop();
+        if (!callback || callback.constructor !== Function) throw new Error('Formr.observe :: the last argument must be a valid JavaScript function');
+        args.forEach(function (arg) {
+          return _this._observable(arg, callback);
+        });
+      }
+      return this;
+    }
+  }, {
+    key: 'unobserve',
+    value: function unobserve() {
+      var _this2 = this;
+
+      if (this._isHTMLFormElement && arguments.length) {
+        Array.from(arguments).forEach(function (key) {
+          _this2._data[key].removeEventListener(_this2._settings.observe_event, _this2._observers[key]);
+          _this2._observers[key] = null;
+        });
+      }
+      return this;
+    }
+  }, {
+    key: 'submit',
+    value: function submit(callback) {
+      var _this3 = this;
+
+      if (this._isHTMLFormElement && this._form) {
+        this._form.addEventListener('submit', function (e) {
+          if (_this3._settings.validate_before_submit) _this3._applyRules(true);
+          callback(e);
+        });
+      }
+      return this;
+    }
+  }, {
+    key: '_observable',
+    value: function _observable(arg, callback) {
+      var _this4 = this;
+
+      var cEvent = null;
+      var cCallback = null;
+      var validate = false;
+
+      if (Array.isArray(arg)) {
+        var _arg = arg;
+
+        var _arg2 = _slicedToArray(_arg, 4);
+
+        arg = _arg2[0];
+        cEvent = _arg2[1];
+        customCallback = _arg2[2];
+        validate = _arg2[3];
+      } else if (arg.constructor === Object) {
+        cEvent = arg.event || null;
+        cCallback = arg.callback || null;
+        validate = arg.validate;
+        arg = arg.field;
+      }
+
+      this._observers[arg] = this._debounce(function (e) {
+        var value = e.target.value;
+        _this4._setValue(arg, value);
+        var err = null;
+
+        if (validate) {
+          _this4._applyRules(true);
+          err = !_this4.isValid() ? _this4.getErrors() : null;
+        }
+
+        if (cCallback && cCallback.constructor === Function) cCallback(e, arg, value, err);
+        callback(e, arg, value, err);
+      }, 300);
+      this._data[arg].addEventListener(cEvent || this._settings.observe_event, this._observers[arg]);
     }
   }, {
     key: '_getValue',
     value: function _getValue(key) {
       if (this._values[key] !== undefined) return this._values[key];else if (this._data[key] !== undefined) return this._data[key].value;else throw new Error('Key \'' + key + '\' does not exists !');
+    }
+  }, {
+    key: '_getHtmlElement',
+    value: function _getHtmlElement(key) {
+      if (!this._isFormElement) return null;
+      return this._data[key] || null;
+    }
+  }, {
+    key: '_setValue',
+    value: function _setValue(key, value) {
+      if (this._data[key] !== undefined) this._data[key].value = value;
     }
   }, {
     key: '_fillValues',
@@ -292,53 +596,11 @@ var Formr = function () {
 
       var message = this._messages[type];
       if (!message) return;
-      if (repl) {
-        message = message.replace(new RegExp(Object.keys(repl).join("|"), "g"), function (s) {
-          return repl[s];
-        });
-      }
+      if (repl) message = message.replace(new RegExp(Object.keys(repl).join("|"), "g"), function (s) {
+        return repl[s];
+      });
       if (!this._errors[key]) this._errors[key] = [];
       this._errors[key].push(message);
-    }
-  }, {
-    key: '_isString',
-    value: function _isString(value) {
-      try {
-        return value.constructor && value.constructor === String || typeof value === "string";
-      } catch (e) {
-        console.error(e);
-      }
-      return false;
-    }
-  }, {
-    key: '_isNumber',
-    value: function _isNumber(value) {
-      try {
-        return value.constructor && value.constructor === Number || typeof value === "number";
-      } catch (e) {
-        console.error(e);
-      }
-      return false;
-    }
-  }, {
-    key: '_isBoolean',
-    value: function _isBoolean(value) {
-      try {
-        return value.constructor && value.constructor === Boolean || typeof value === "boolean";
-      } catch (e) {
-        console.error(e);
-      }
-      return false;
-    }
-  }, {
-    key: '_isEmail',
-    value: function _isEmail(value) {
-      try {
-        return EMAIL_REGEXP.test(value);
-      } catch (e) {
-        console.error(e);
-      }
-      return false;
     }
   }, {
     key: '_normalizeData',
@@ -376,25 +638,501 @@ var Formr = function () {
             key = _args[0];
 
         var value = this._getValue(key);
-        var _assert_method_name = '_is' + (rule_name.charAt(0).toUpperCase() + rule_name.slice(1));
-        if (this[_assert_method_name] !== undefined && this[_assert_method_name](value) === false) this._addError(key, fn);
+        this._addRule(key, rule_name);
+        if (!this._validate(rule_name, key, value)) this._addError(key, rule_name);
       }
       return this;
     }
   }, {
-    key: 'messages',
-    value: function messages() {
-      var _messages = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    key: '_validate',
+    value: function _validate(rule, key, value) {
+      var constraints = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
 
-      this._messages = Object.assign({}, this._messages, _messages);
-      return this;
+      if (!this._isRequired(key)) return true;
+      var ValidatorClass = this._validators[rule] || null;
+      if (!ValidatorClass) return true;
+      try {
+        var v = new ValidatorClass(value, constraints);
+        return v.validate.apply(v, constraints);
+      } catch (e) {
+        throw new Error(e);
+      }
+      return true;
+    }
+  }, {
+    key: '_addRule',
+    value: function _addRule(key, name) {
+      var constraints = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+
+      if (!this._rules[key]) this._rules[key] = {};
+      if (!this._rules[key][name]) this._rules[key][name] = constraints;
+    }
+  }, {
+    key: '_isRequired',
+    value: function _isRequired(key) {
+      return Object.keys(this._rules[key]).indexOf('required') >= 0;
+    }
+  }, {
+    key: '_applyRules',
+    value: function _applyRules() {
+      var reset_errors = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+      if (reset_errors) this.resetErrors();
+      this._updateValues();
+      for (var key in this._rules) {
+        this._applyRule(key);
+      }
+    }
+  }, {
+    key: '_applyRule',
+    value: function _applyRule(key) {
+      if (!this._rules[key]) return;
+      var rules = this._rules[key];
+      if (!rules || !Object.keys(rules).length) return;
+      for (var name in rules) {
+        this[name].apply(this, [key].concat(_toConsumableArray(rules[name])));
+      }
+    }
+  }, {
+    key: '_updateValues',
+    value: function _updateValues() {
+      for (var field in this._data) {
+        this._values[field] = this._data[field].value;
+      }
+    }
+  }, {
+    key: '_isFormElement',
+    value: function _isFormElement(item) {
+      if (!this._isHTMLFormElement || !item.constructor) return false;
+      return [HTMLInputElement, HTMLTextAreaElement, HTMLSelectElement].indexOf(item.constructor) >= 0;
+    }
+  }, {
+    key: '_debounce',
+    value: function _debounce(callback, delay) {
+      var timer = void 0;
+      return function () {
+        var args = arguments;
+        var context = this;
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+          callback.apply(context, args);
+        }, delay);
+      };
     }
   }]);
 
   return Formr;
 }();
 
-module.exports = Formr;
+exports.default = Formr;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _BaseRule2 = __webpack_require__(0);
+
+var _BaseRule3 = _interopRequireDefault(_BaseRule2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var RequiredRule = function (_BaseRule) {
+  _inherits(RequiredRule, _BaseRule);
+
+  function RequiredRule(value) {
+    _classCallCheck(this, RequiredRule);
+
+    return _possibleConstructorReturn(this, (RequiredRule.__proto__ || Object.getPrototypeOf(RequiredRule)).call(this, value));
+  }
+
+  _createClass(RequiredRule, [{
+    key: 'validate',
+    value: function validate() {
+      return this.value !== undefined && this.helpers._isString(this.value) && this.value.length > 0;
+    }
+  }]);
+
+  return RequiredRule;
+}(_BaseRule3.default);
+
+exports.default = RequiredRule;
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _BaseRule2 = __webpack_require__(0);
+
+var _BaseRule3 = _interopRequireDefault(_BaseRule2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var StringRule = function (_BaseRule) {
+  _inherits(StringRule, _BaseRule);
+
+  function StringRule(value) {
+    _classCallCheck(this, StringRule);
+
+    return _possibleConstructorReturn(this, (StringRule.__proto__ || Object.getPrototypeOf(StringRule)).call(this, value));
+  }
+
+  _createClass(StringRule, [{
+    key: 'validate',
+    value: function validate() {
+      return this.value !== undefined && this.helpers._isString(this.value);
+    }
+  }]);
+
+  return StringRule;
+}(_BaseRule3.default);
+
+exports.default = StringRule;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _BaseRule2 = __webpack_require__(0);
+
+var _BaseRule3 = _interopRequireDefault(_BaseRule2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var NumberRule = function (_BaseRule) {
+  _inherits(NumberRule, _BaseRule);
+
+  function NumberRule(value) {
+    _classCallCheck(this, NumberRule);
+
+    return _possibleConstructorReturn(this, (NumberRule.__proto__ || Object.getPrototypeOf(NumberRule)).call(this, value));
+  }
+
+  _createClass(NumberRule, [{
+    key: 'validate',
+    value: function validate() {
+      return this.value !== undefined && this.helpers._isInt(this.value) && this.helpers._isNumber(this.value);
+    }
+  }]);
+
+  return NumberRule;
+}(_BaseRule3.default);
+
+exports.default = NumberRule;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _BaseRule2 = __webpack_require__(0);
+
+var _BaseRule3 = _interopRequireDefault(_BaseRule2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var BooleanRule = function (_BaseRule) {
+  _inherits(BooleanRule, _BaseRule);
+
+  function BooleanRule(value) {
+    _classCallCheck(this, BooleanRule);
+
+    return _possibleConstructorReturn(this, (BooleanRule.__proto__ || Object.getPrototypeOf(BooleanRule)).call(this, value));
+  }
+
+  _createClass(BooleanRule, [{
+    key: 'validate',
+    value: function validate() {
+      return this.value !== undefined && this.helpers._isBoolean(this.value);
+    }
+  }]);
+
+  return BooleanRule;
+}(_BaseRule3.default);
+
+exports.default = BooleanRule;
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _BaseRule2 = __webpack_require__(0);
+
+var _BaseRule3 = _interopRequireDefault(_BaseRule2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var EmailRule = function (_BaseRule) {
+  _inherits(EmailRule, _BaseRule);
+
+  function EmailRule(value) {
+    _classCallCheck(this, EmailRule);
+
+    return _possibleConstructorReturn(this, (EmailRule.__proto__ || Object.getPrototypeOf(EmailRule)).call(this, value));
+  }
+
+  _createClass(EmailRule, [{
+    key: 'validate',
+    value: function validate() {
+      return this.value !== undefined && this.helpers._isEmail(this.value);
+    }
+  }]);
+
+  return EmailRule;
+}(_BaseRule3.default);
+
+exports.default = EmailRule;
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _BaseRule2 = __webpack_require__(0);
+
+var _BaseRule3 = _interopRequireDefault(_BaseRule2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var CheckedRule = function (_BaseRule) {
+  _inherits(CheckedRule, _BaseRule);
+
+  function CheckedRule(value) {
+    _classCallCheck(this, CheckedRule);
+
+    return _possibleConstructorReturn(this, (CheckedRule.__proto__ || Object.getPrototypeOf(CheckedRule)).call(this, value));
+  }
+
+  _createClass(CheckedRule, [{
+    key: 'validate',
+    value: function validate(expected) {
+      return this.value == expected;
+    }
+  }]);
+
+  return CheckedRule;
+}(_BaseRule3.default);
+
+exports.default = CheckedRule;
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _BaseRule2 = __webpack_require__(0);
+
+var _BaseRule3 = _interopRequireDefault(_BaseRule2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var ImageRule = function (_BaseRule) {
+  _inherits(ImageRule, _BaseRule);
+
+  function ImageRule(value) {
+    _classCallCheck(this, ImageRule);
+
+    var _this = _possibleConstructorReturn(this, (ImageRule.__proto__ || Object.getPrototypeOf(ImageRule)).call(this, value));
+
+    _this.mimetypes = ['jpg', 'jpeg', 'png', 'svg', 'tiff', 'bmp', 'gif'];
+    return _this;
+  }
+
+  _createClass(ImageRule, [{
+    key: 'validate',
+    value: function validate() {
+      var mimetypes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.mimetypes;
+
+      var re = new RegExp(mimetypes.join('|'), 'i');
+      return this.value !== undefined && this.value.type && re.test(this.value.type);
+    }
+  }]);
+
+  return ImageRule;
+}(_BaseRule3.default);
+
+exports.default = ImageRule;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+(function () {
+  if (!Event.prototype.preventDefault) {
+    Event.prototype.preventDefault = function () {
+      this.returnValue = false;
+    };
+  }
+  if (!Event.prototype.stopPropagation) {
+    Event.prototype.stopPropagation = function () {
+      this.cancelBubble = true;
+    };
+  }
+  if (!Element.prototype.addEventListener) {
+    var eventListeners = [];
+
+    var addEventListener = function addEventListener(type, listener /*, useCapture (will be ignored) */) {
+      var self = this;
+      var wrapper = function wrapper(e) {
+        e.target = e.srcElement;
+        e.currentTarget = self;
+        if (typeof listener.handleEvent != 'undefined') {
+          listener.handleEvent(e);
+        } else {
+          listener.call(self, e);
+        }
+      };
+      if (type == "DOMContentLoaded") {
+        var wrapper2 = function wrapper2(e) {
+          if (document.readyState == "complete") {
+            wrapper(e);
+          }
+        };
+        document.attachEvent("onreadystatechange", wrapper2);
+        eventListeners.push({ object: this, type: type, listener: listener, wrapper: wrapper2 });
+
+        if (document.readyState == "complete") {
+          var e = new Event();
+          e.srcElement = window;
+          wrapper2(e);
+        }
+      } else {
+        this.attachEvent("on" + type, wrapper);
+        eventListeners.push({ object: this, type: type, listener: listener, wrapper: wrapper });
+      }
+    };
+    var removeEventListener = function removeEventListener(type, listener /*, useCapture (will be ignored) */) {
+      var counter = 0;
+      while (counter < eventListeners.length) {
+        var eventListener = eventListeners[counter];
+        if (eventListener.object == this && eventListener.type == type && eventListener.listener == listener) {
+          if (type == "DOMContentLoaded") {
+            this.detachEvent("onreadystatechange", eventListener.wrapper);
+          } else {
+            this.detachEvent("on" + type, eventListener.wrapper);
+          }
+          eventListeners.splice(counter, 1);
+          break;
+        }
+        ++counter;
+      }
+    };
+    Element.prototype.addEventListener = addEventListener;
+    Element.prototype.removeEventListener = removeEventListener;
+    if (HTMLDocument) {
+      HTMLDocument.prototype.addEventListener = addEventListener;
+      HTMLDocument.prototype.removeEventListener = removeEventListener;
+    }
+    if (Window) {
+      Window.prototype.addEventListener = addEventListener;
+      Window.prototype.removeEventListener = removeEventListener;
+    }
+  }
+})();
 
 /***/ })
 /******/ ]);

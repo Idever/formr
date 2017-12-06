@@ -3,11 +3,14 @@
     ["env", {
       "modules": false,
       "targets": {
+        "node": "current",
         "browsers": ["last 2 versions", "safari >= 7", "ie >= 7"]
       }
     }]
   ],
   "plugins": [
-    "syntax-dynamic-import"
+    "transform-object-rest-spread",
+    "syntax-dynamic-import",
+    "transform-es2015-modules-commonjs"
   ]
 }

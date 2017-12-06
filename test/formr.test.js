@@ -1,6 +1,6 @@
-const expect = require('chai').expect
-const sinon = require('sinon')
-const Formr = require('../src/Formr')
+import { expect } from 'chai'
+import sinon from 'sinon'
+import Formr from '../src/Formr'
 
 describe('Formr', () => {
 
