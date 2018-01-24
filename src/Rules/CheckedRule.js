@@ -1,13 +1,10 @@
 import BaseRule from './BaseRule'
+import { isCheckboxElement } from '../../lib/helpers'
 
 export default class CheckedRule extends BaseRule {
 
-  constructor (value) {
-    super(value)
-  }
-
   validate (expected) {
-    return this.value == expected
+    return this._hasHTMLField() && isCheckboxElement(this.HTMLField) ? this.HTMLField.checked === expected : this.value == expected
   }
 
 }

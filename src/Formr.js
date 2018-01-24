@@ -1,4 +1,3 @@
-import helpers from '../lib/helpers'
 import RequiredRule from './Rules/RequiredRule'
 import StringRule from './Rules/StringRule'
 import NumberRule from './Rules/NumberRule'
@@ -6,10 +5,11 @@ import BooleanRule from './Rules/BooleanRule'
 import EmailRule from './Rules/EmailRule'
 import CheckedRule from './Rules/CheckedRule'
 import ImageRule from './Rules/ImageRule'
+import { isInt, isStr, isNumber, isFunction } from '../lib/helpers'
 
 const DEFAULT_SETTINGS = {
   debug: false,
-  test_mode: false, // false|browser|server|both,
+  test_mode: false, // false|browser|server|both
   observe_event: 'keyup',
   validate_before_submit: true
 }
@@ -160,13 +160,13 @@ export default class Formr {
 
   between (key, min = 0, max = 0) {
     const value = this._getValue(key)
-    const isInt = helpers._isInt(value)
+    const _isInt = isInt(value)
     this._addRule(key, 'between', [min, max])
 
     if (
-      (helpers._isStr(value) && (value.length < min || value.length > max)) ||
-      (isInt && (value < min || value > max))
-    ) this._addError(key, isInt ? 'between' : 'length', {':min': min, ':max': max})
+      (isStr(value) && (value.length < min || value.length > max)) ||
+      (_isInt && (value < min || value > max))
+    ) this._addError(key, _isInt ? 'between' : 'length', {':min': min, ':max': max})
     return this
   }
 
@@ -175,7 +175,7 @@ export default class Formr {
     this._addRule(key, 'under', [max, strict])
 
     if (
-      helpers._isNumber(value) &&
+      isNumber(value) &&
       ((strict && value > max) ||
       (!strict && value >= max))
     ) this._addError(key, 'under', {':max': max, ':strict': !strict ? ' strictement' : ''})
@@ -187,7 +187,7 @@ export default class Formr {
     this._addRule(key, 'above', [min, strict])
 
     if (
-      helpers._isNumber(value) &&
+      isNumber(value) &&
       ((strict && value < min) ||
       (!strict && value <= min))
     ) this._addError(key, 'above', {':min': min, ':strict': !strict ? ' strictement' : ''})
@@ -220,7 +220,7 @@ export default class Formr {
   }
 
   observe () {
-    if (!arguments.length || helpers._isFunction(arguments[0])) throw new Error('Formr.observe :: You must specify at least one field to observe')
+    if (!arguments.length || isFunction(arguments[0])) throw new Error('Formr.observe :: You must specify at least one field to observe')
     if (this._isHTMLFormElement) {
       let args = Array.from(arguments)
       const callback = args.pop()
@@ -287,7 +287,7 @@ export default class Formr {
   }
 
   _getHtmlElement (key) {
-    if (!this._isFormElement) return null
+    if (!this._isHTMLFormElement) return null
     return this._data[key] || null
   }
 
@@ -350,11 +350,11 @@ export default class Formr {
   }
 
   _validate (rule, key, value, constraints = []) {
-    if (!this._isRequired(key)) return true
+    if (this._isOptional(key) && !this._getValue(key).length) return true
     const ValidatorClass = this._validators[rule] || null
     if (!ValidatorClass) return true
     try {
-      const v = new ValidatorClass(value, constraints)
+      const v = new ValidatorClass(rule, key, value, constraints, this._getHtmlElement(key))
       return v.validate.apply(v, constraints)
     } catch (e) {
       throw new Error(e)
@@ -369,6 +369,14 @@ export default class Formr {
 
   _isRequired (key) {
     return Object.keys(this._rules[key]).indexOf('required') >= 0
+  }
+
+  _isOptional (key) {
+    let condition = !this._isRequired(key)
+    // let field = this._getHtmlElement(key)
+    // let value = this._getValue(key)
+
+    return condition
   }
 
   _applyRules (reset_errors = false) {

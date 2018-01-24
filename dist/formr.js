@@ -74,20 +74,34 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _helpers = __webpack_require__(1);
-
-var _helpers2 = _interopRequireDefault(_helpers);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var BaseRule = function BaseRule(value) {
-  _classCallCheck(this, BaseRule);
+var BaseRule = function () {
+  function BaseRule(rule, key) {
+    var value = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : undefined;
+    var constraints = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+    var HTMLField = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
 
-  this.value = value;
-  this.helpers = _helpers2.default;
-};
+    _classCallCheck(this, BaseRule);
+
+    this.rule = rule;
+    this.key = key;
+    this.value = value;
+    this.constraints = constraints;
+    this.HTMLField = HTMLField;
+  }
+
+  _createClass(BaseRule, [{
+    key: "_hasHTMLField",
+    value: function _hasHTMLField() {
+      return this.HTMLField && this.HTMLField.length;
+    }
+  }]);
+
+  return BaseRule;
+}();
 
 exports.default = BaseRule;
 
@@ -101,57 +115,144 @@ exports.default = BaseRule;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+// Constants
 var EMAIL_REGEXP = exports.EMAIL_REGEXP = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 
+// Value type
+var isString = exports.isString = function isString(value) {
+  try {
+    return value.constructor && value.constructor === String || typeof value === "string";
+  } catch (e) {
+    console.error(e);
+  }
+  return false;
+};
+
+var isNumber = exports.isNumber = function isNumber(value) {
+  try {
+    return value.constructor && value.constructor === Number || typeof value === "number";
+  } catch (e) {
+    console.error(e);
+  }
+  return false;
+};
+
+var isBoolean = exports.isBoolean = function isBoolean(value) {
+  try {
+    return value.constructor && value.constructor === Boolean || typeof value === "boolean";
+  } catch (e) {
+    console.error(e);
+  }
+  return false;
+};
+
+var isEmail = exports.isEmail = function isEmail(value) {
+  try {
+    return EMAIL_REGEXP.test(value);
+  } catch (e) {
+    console.error(e);
+  }
+  return false;
+};
+
+var isFunction = exports.isFunction = function isFunction(value) {
+  try {
+    return value.constructor && value.constructor === Function || typeof value === "function";
+  } catch (e) {
+    console.error(e);
+  }
+  return false;
+};
+
+var isInt = exports.isInt = function isInt(value) {
+  return Boolean(value.length && !isNaN(Number(value)));
+};
+var isStr = exports.isStr = function isStr(value) {
+  return isInt(value) === false && isString(value);
+};
+
+// Field type
+var isInputElement = function isInputElement(field) {
+  return field.constructor === HTMLInputElement;
+};
+var isTextInputElement = function isTextInputElement(field) {
+  return isInputElement(field) && field.type === "text";
+};
+var isNumberInputElement = function isNumberInputElement(field) {
+  return isInputElement(field) && field.type === "number";
+};
+var isEmailInputElement = function isEmailInputElement(field) {
+  return isInputElement(field) && field.type === "email";
+};
+var isDateInputElement = function isDateInputElement(field) {
+  return isInputElement(field) && field.type === "date";
+};
+var isCheckboxElement = function isCheckboxElement(field) {
+  return isInputElement(field) && field.type === "checkbox";
+};
+var isRadioElement = function isRadioElement(field) {
+  return isInputElement(field) && field.type === "radio";
+};
+var isSelectElement = function isSelectElement(field) {
+  return field.constructor === HTMLSelectElement;
+};
+var isTextareaElement = function isTextareaElement(field) {
+  return field.constructor === HTMLTextAreaElement;
+};
+var isCheckableElement = function isCheckableElement(field) {
+  return isInput && (isCheckboxElement || isRadioElement);
+};
+
+// Field state
+var isFieldChecked = function isFieldChecked(field) {
+  return isCheckboxElement(field) && isRadioElement(field) && field.checked === true;
+};
+var isFieldUnchecked = function isFieldUnchecked(field) {
+  return isCheckboxElement(field) && isRadioElement(field) && field.checked === false;
+};
+var isFieldSelected = function isFieldSelected(field) {
+  return isSelectElement(field) && field.selected === true;
+};
+var isFieldUnselected = function isFieldUnselected(field) {
+  return isSelectElement(field) && field.selected === false;
+};
+
+// Tools
+var capitalize = exports.capitalize = function capitalize(value) {
+  return "" + value.charAt(0).toUpperCase() + value.slice(1);
+};
+
 exports.default = {
-  _isString: function _isString(value) {
-    try {
-      return value.constructor && value.constructor === String || typeof value === "string";
-    } catch (e) {
-      console.error(e);
-    }
-    return false;
+  CONSTANTS: { EMAIL_REGEXP: EMAIL_REGEXP },
+  value_type: {
+    isString: isString,
+    isNumber: isNumber,
+    isBoolean: isBoolean,
+    isEmail: isEmail,
+    isFunction: isFunction,
+    isInt: isInt,
+    isStr: isStr
   },
-  _isNumber: function _isNumber(value) {
-    try {
-      return value.constructor && value.constructor === Number || typeof value === "number";
-    } catch (e) {
-      console.error(e);
-    }
-    return false;
+  field_type: {
+    isInputElement: isInputElement,
+    isTextInputElement: isTextInputElement,
+    isNumberInputElement: isNumberInputElement,
+    isEmailInputElement: isEmailInputElement,
+    isDateInputElement: isDateInputElement,
+    isCheckboxElement: isCheckboxElement,
+    isRadioElement: isRadioElement,
+    isSelectElement: isSelectElement,
+    isTextareaElement: isTextareaElement,
+    isCheckableElement: isCheckableElement
   },
-  _isBoolean: function _isBoolean(value) {
-    try {
-      return value.constructor && value.constructor === Boolean || typeof value === "boolean";
-    } catch (e) {
-      console.error(e);
-    }
-    return false;
+  field_state: {
+    isFieldChecked: isFieldChecked,
+    isFieldUnchecked: isFieldUnchecked,
+    isFieldSelected: isFieldSelected,
+    isFieldUnselected: isFieldUnselected
   },
-  _isEmail: function _isEmail(value) {
-    try {
-      return EMAIL_REGEXP.test(value);
-    } catch (e) {
-      console.error(e);
-    }
-    return false;
-  },
-  _isFunction: function _isFunction(value) {
-    try {
-      return value.constructor && value.constructor === Function || typeof value === "function";
-    } catch (e) {
-      console.error(e);
-    }
-    return false;
-  },
-  _isInt: function _isInt(value) {
-    return !isNaN(Number(value));
-  },
-  _isStr: function _isStr(value) {
-    return !this._isInt(value) && this._isString(value);
-  },
-  _capitalize: function _capitalize(value) {
-    return "" + value.charAt(0).toUpperCase() + value.slice(1);
+  tools: {
+    capitalize: capitalize
   }
 };
 
@@ -200,10 +301,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _helpers = __webpack_require__(1);
-
-var _helpers2 = _interopRequireDefault(_helpers);
-
 var _RequiredRule = __webpack_require__(4);
 
 var _RequiredRule2 = _interopRequireDefault(_RequiredRule);
@@ -232,6 +329,8 @@ var _ImageRule = __webpack_require__(10);
 
 var _ImageRule2 = _interopRequireDefault(_ImageRule);
 
+var _helpers = __webpack_require__(1);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -240,7 +339,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var DEFAULT_SETTINGS = {
   debug: false,
-  test_mode: false, // false|browser|server|both,
+  test_mode: false, // false|browser|server|both
   observe_event: 'keyup',
   validate_before_submit: true
 };
@@ -425,10 +524,10 @@ var Formr = function () {
       var max = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
 
       var value = this._getValue(key);
-      var isInt = _helpers2.default._isInt(value);
+      var _isInt = (0, _helpers.isInt)(value);
       this._addRule(key, 'between', [min, max]);
 
-      if (_helpers2.default._isStr(value) && (value.length < min || value.length > max) || isInt && (value < min || value > max)) this._addError(key, isInt ? 'between' : 'length', { ':min': min, ':max': max });
+      if ((0, _helpers.isStr)(value) && (value.length < min || value.length > max) || _isInt && (value < min || value > max)) this._addError(key, _isInt ? 'between' : 'length', { ':min': min, ':max': max });
       return this;
     }
   }, {
@@ -440,7 +539,7 @@ var Formr = function () {
       var value = Number(this._getValue(key));
       this._addRule(key, 'under', [max, strict]);
 
-      if (_helpers2.default._isNumber(value) && (strict && value > max || !strict && value >= max)) this._addError(key, 'under', { ':max': max, ':strict': !strict ? ' strictement' : '' });
+      if ((0, _helpers.isNumber)(value) && (strict && value > max || !strict && value >= max)) this._addError(key, 'under', { ':max': max, ':strict': !strict ? ' strictement' : '' });
       return this;
     }
   }, {
@@ -452,7 +551,7 @@ var Formr = function () {
       var value = Number(this._getValue(key));
       this._addRule(key, 'above', [min, strict]);
 
-      if (_helpers2.default._isNumber(value) && (strict && value < min || !strict && value <= min)) this._addError(key, 'above', { ':min': min, ':strict': !strict ? ' strictement' : '' });
+      if ((0, _helpers.isNumber)(value) && (strict && value < min || !strict && value <= min)) this._addError(key, 'above', { ':min': min, ':strict': !strict ? ' strictement' : '' });
       return this;
     }
   }, {
@@ -487,7 +586,7 @@ var Formr = function () {
     value: function observe() {
       var _this = this;
 
-      if (!arguments.length || _helpers2.default._isFunction(arguments[0])) throw new Error('Formr.observe :: You must specify at least one field to observe');
+      if (!arguments.length || (0, _helpers.isFunction)(arguments[0])) throw new Error('Formr.observe :: You must specify at least one field to observe');
       if (this._isHTMLFormElement) {
         var args = Array.from(arguments);
         var callback = args.pop();
@@ -572,7 +671,7 @@ var Formr = function () {
   }, {
     key: '_getHtmlElement',
     value: function _getHtmlElement(key) {
-      if (!this._isFormElement) return null;
+      if (!this._isHTMLFormElement) return null;
       return this._data[key] || null;
     }
   }, {
@@ -648,11 +747,11 @@ var Formr = function () {
     value: function _validate(rule, key, value) {
       var constraints = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
 
-      if (!this._isRequired(key)) return true;
+      if (this._isOptional(key) && !this._getValue(key).length) return true;
       var ValidatorClass = this._validators[rule] || null;
       if (!ValidatorClass) return true;
       try {
-        var v = new ValidatorClass(value, constraints);
+        var v = new ValidatorClass(rule, key, value, constraints, this._getHtmlElement(key));
         return v.validate.apply(v, constraints);
       } catch (e) {
         throw new Error(e);
@@ -671,6 +770,15 @@ var Formr = function () {
     key: '_isRequired',
     value: function _isRequired(key) {
       return Object.keys(this._rules[key]).indexOf('required') >= 0;
+    }
+  }, {
+    key: '_isOptional',
+    value: function _isOptional(key) {
+      var condition = !this._isRequired(key);
+      // let field = this._getHtmlElement(key)
+      // let value = this._getValue(key)
+
+      return condition;
     }
   }, {
     key: '_applyRules',
@@ -743,6 +851,8 @@ var _BaseRule2 = __webpack_require__(0);
 
 var _BaseRule3 = _interopRequireDefault(_BaseRule2);
 
+var _helpers = __webpack_require__(1);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -754,16 +864,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var RequiredRule = function (_BaseRule) {
   _inherits(RequiredRule, _BaseRule);
 
-  function RequiredRule(value) {
+  function RequiredRule() {
     _classCallCheck(this, RequiredRule);
 
-    return _possibleConstructorReturn(this, (RequiredRule.__proto__ || Object.getPrototypeOf(RequiredRule)).call(this, value));
+    return _possibleConstructorReturn(this, (RequiredRule.__proto__ || Object.getPrototypeOf(RequiredRule)).apply(this, arguments));
   }
 
   _createClass(RequiredRule, [{
     key: 'validate',
     value: function validate() {
-      return this.value !== undefined && this.helpers._isString(this.value) && this.value.length > 0;
+      var v = true;
+      if ((0, _helpers.isStr)(this.value)) v = Boolean(this.value.trim().length > 0);
+      return this.value !== undefined && v;
     }
   }]);
 
@@ -789,6 +901,8 @@ var _BaseRule2 = __webpack_require__(0);
 
 var _BaseRule3 = _interopRequireDefault(_BaseRule2);
 
+var _helpers = __webpack_require__(1);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -800,16 +914,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var StringRule = function (_BaseRule) {
   _inherits(StringRule, _BaseRule);
 
-  function StringRule(value) {
+  function StringRule() {
     _classCallCheck(this, StringRule);
 
-    return _possibleConstructorReturn(this, (StringRule.__proto__ || Object.getPrototypeOf(StringRule)).call(this, value));
+    return _possibleConstructorReturn(this, (StringRule.__proto__ || Object.getPrototypeOf(StringRule)).apply(this, arguments));
   }
 
   _createClass(StringRule, [{
     key: 'validate',
     value: function validate() {
-      return this.value !== undefined && this.helpers._isString(this.value);
+      return this.value !== undefined && (0, _helpers.isString)(this.value);
     }
   }]);
 
@@ -835,6 +949,8 @@ var _BaseRule2 = __webpack_require__(0);
 
 var _BaseRule3 = _interopRequireDefault(_BaseRule2);
 
+var _helpers = __webpack_require__(1);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -846,16 +962,17 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var NumberRule = function (_BaseRule) {
   _inherits(NumberRule, _BaseRule);
 
-  function NumberRule(value) {
+  function NumberRule() {
     _classCallCheck(this, NumberRule);
 
-    return _possibleConstructorReturn(this, (NumberRule.__proto__ || Object.getPrototypeOf(NumberRule)).call(this, value));
+    return _possibleConstructorReturn(this, (NumberRule.__proto__ || Object.getPrototypeOf(NumberRule)).apply(this, arguments));
   }
 
   _createClass(NumberRule, [{
     key: 'validate',
     value: function validate() {
-      return this.value !== undefined && this.helpers._isInt(this.value) && this.helpers._isNumber(this.value);
+      if ((0, _helpers.isInt)(this.value)) this.value = Number(this.value);
+      return this.value !== undefined && (0, _helpers.isNumber)(this.value);
     }
   }]);
 
@@ -881,6 +998,8 @@ var _BaseRule2 = __webpack_require__(0);
 
 var _BaseRule3 = _interopRequireDefault(_BaseRule2);
 
+var _helpers = __webpack_require__(1);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -892,16 +1011,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var BooleanRule = function (_BaseRule) {
   _inherits(BooleanRule, _BaseRule);
 
-  function BooleanRule(value) {
+  function BooleanRule() {
     _classCallCheck(this, BooleanRule);
 
-    return _possibleConstructorReturn(this, (BooleanRule.__proto__ || Object.getPrototypeOf(BooleanRule)).call(this, value));
+    return _possibleConstructorReturn(this, (BooleanRule.__proto__ || Object.getPrototypeOf(BooleanRule)).apply(this, arguments));
   }
 
   _createClass(BooleanRule, [{
     key: 'validate',
     value: function validate() {
-      return this.value !== undefined && this.helpers._isBoolean(this.value);
+      return this.value !== undefined && (0, _helpers.isBoolean)(this.value);
     }
   }]);
 
@@ -927,6 +1046,8 @@ var _BaseRule2 = __webpack_require__(0);
 
 var _BaseRule3 = _interopRequireDefault(_BaseRule2);
 
+var _helpers = __webpack_require__(1);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -938,16 +1059,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var EmailRule = function (_BaseRule) {
   _inherits(EmailRule, _BaseRule);
 
-  function EmailRule(value) {
+  function EmailRule() {
     _classCallCheck(this, EmailRule);
 
-    return _possibleConstructorReturn(this, (EmailRule.__proto__ || Object.getPrototypeOf(EmailRule)).call(this, value));
+    return _possibleConstructorReturn(this, (EmailRule.__proto__ || Object.getPrototypeOf(EmailRule)).apply(this, arguments));
   }
 
   _createClass(EmailRule, [{
     key: 'validate',
     value: function validate() {
-      return this.value !== undefined && this.helpers._isEmail(this.value);
+      return this.value !== undefined && (0, _helpers.isEmail)(this.value);
     }
   }]);
 
@@ -973,6 +1094,8 @@ var _BaseRule2 = __webpack_require__(0);
 
 var _BaseRule3 = _interopRequireDefault(_BaseRule2);
 
+var _helpers = __webpack_require__(1);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -984,16 +1107,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var CheckedRule = function (_BaseRule) {
   _inherits(CheckedRule, _BaseRule);
 
-  function CheckedRule(value) {
+  function CheckedRule() {
     _classCallCheck(this, CheckedRule);
 
-    return _possibleConstructorReturn(this, (CheckedRule.__proto__ || Object.getPrototypeOf(CheckedRule)).call(this, value));
+    return _possibleConstructorReturn(this, (CheckedRule.__proto__ || Object.getPrototypeOf(CheckedRule)).apply(this, arguments));
   }
 
   _createClass(CheckedRule, [{
     key: 'validate',
     value: function validate(expected) {
-      return this.value == expected;
+      return this._hasHTMLField() && (0, _helpers.isCheckboxElement)(this.HTMLField) ? this.HTMLField.checked === expected : this.value == expected;
     }
   }]);
 
@@ -1030,10 +1153,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var ImageRule = function (_BaseRule) {
   _inherits(ImageRule, _BaseRule);
 
-  function ImageRule(value) {
+  function ImageRule(rule, key, value, HTMLField) {
     _classCallCheck(this, ImageRule);
 
-    var _this = _possibleConstructorReturn(this, (ImageRule.__proto__ || Object.getPrototypeOf(ImageRule)).call(this, value));
+    var _this = _possibleConstructorReturn(this, (ImageRule.__proto__ || Object.getPrototypeOf(ImageRule)).call(this, rule, key, value, HTMLField));
 
     _this.mimetypes = ['jpg', 'jpeg', 'png', 'svg', 'tiff', 'bmp', 'gif'];
     return _this;

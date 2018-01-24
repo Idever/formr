@@ -2,8 +2,8 @@ import BaseRule from './BaseRule'
 
 export default class ImageRule extends BaseRule {
 
-  constructor (value) {
-    super(value)
+  constructor (rule, key, value, HTMLField) {
+    super(rule, key, value, HTMLField)
     this.mimetypes = ['jpg', 'jpeg', 'png', 'svg', 'tiff', 'bmp', 'gif']
   }
 

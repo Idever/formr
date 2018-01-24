@@ -1,13 +1,10 @@
 import BaseRule from './BaseRule'
+import { isBoolean } from '../../lib/helpers'
 
 export default class BooleanRule extends BaseRule {
 
-  constructor (value) {
-    super(value)
-  }
-
   validate () {
-    return this.value !== undefined && this.helpers._isBoolean(this.value)
+    return this.value !== undefined && isBoolean(this.value)
   }
 
 }

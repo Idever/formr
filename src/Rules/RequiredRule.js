@@ -1,13 +1,12 @@
 import BaseRule from './BaseRule'
+import { isStr, isString, isInt } from '../../lib/helpers'
 
 export default class RequiredRule extends BaseRule {
 
-  constructor (value) {
-    super(value)
-  }
-
   validate () {
-    return this.value !== undefined && this.helpers._isString(this.value) && this.value.length > 0
+    let v = true
+    if (isStr(this.value)) v = Boolean(this.value.trim().length > 0)
+    return this.value !== undefined && v;
   }
 
 }

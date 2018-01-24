@@ -1,13 +1,11 @@
 import BaseRule from './BaseRule'
+import { isInt, isNumber } from '../../lib/helpers'
 
 export default class NumberRule extends BaseRule {
 
-  constructor (value) {
-    super(value)
-  }
-
   validate () {
-    return this.value !== undefined && this.helpers._isInt(this.value) && this.helpers._isNumber(this.value)
+    if (isInt(this.value)) this.value = Number(this.value)
+    return this.value !== undefined && isNumber(this.value)
   }
 
 }
