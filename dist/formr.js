@@ -200,7 +200,7 @@ var isTextareaElement = exports.isTextareaElement = function isTextareaElement(f
   return field.constructor === HTMLTextAreaElement;
 };
 var isCheckableElement = exports.isCheckableElement = function isCheckableElement(field) {
-  return isInputElement(field) && (isCheckboxElement || isRadioElement);
+  return isInputElement(field) && (isCheckboxElement(field) || isRadioElement(field));
 };
 
 // Field state
