@@ -73,55 +73,17 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var BaseRule = function () {
-  function BaseRule(rule, key) {
-    var value = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : undefined;
-    var constraints = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
-    var HTMLField = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
-
-    _classCallCheck(this, BaseRule);
-
-    this.rule = rule;
-    this.key = key;
-    this.value = value;
-    this.constraints = constraints;
-    this.HTMLField = HTMLField;
-  }
-
-  _createClass(BaseRule, [{
-    key: "_hasHTMLField",
-    value: function _hasHTMLField() {
-      return this.HTMLField && this.HTMLField.length;
-    }
-  }]);
-
-  return BaseRule;
-}();
-
-exports.default = BaseRule;
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 // Constants
 var EMAIL_REGEXP = exports.EMAIL_REGEXP = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 
 // Value type
+var isset = exports.isset = function isset(value) {
+  return value !== undefined && value !== null;
+};
+
 var isString = exports.isString = function isString(value) {
   try {
-    return value.constructor && value.constructor === String || typeof value === "string";
+    return isset(value) && value.constructor && value.constructor === String || typeof value === "string";
   } catch (e) {
     console.error(e);
   }
@@ -130,7 +92,7 @@ var isString = exports.isString = function isString(value) {
 
 var isNumber = exports.isNumber = function isNumber(value) {
   try {
-    return value.constructor && value.constructor === Number || typeof value === "number";
+    return isset(value) && value.constructor && value.constructor === Number || typeof value === "number";
   } catch (e) {
     console.error(e);
   }
@@ -139,7 +101,7 @@ var isNumber = exports.isNumber = function isNumber(value) {
 
 var isBoolean = exports.isBoolean = function isBoolean(value) {
   try {
-    return value.constructor && value.constructor === Boolean || typeof value === "boolean";
+    return isset(value) && value.constructor && value.constructor === Boolean || typeof value === "boolean";
   } catch (e) {
     console.error(e);
   }
@@ -148,7 +110,7 @@ var isBoolean = exports.isBoolean = function isBoolean(value) {
 
 var isEmail = exports.isEmail = function isEmail(value) {
   try {
-    return EMAIL_REGEXP.test(value);
+    return isset(value) && EMAIL_REGEXP.test(value);
   } catch (e) {
     console.error(e);
   }
@@ -157,7 +119,7 @@ var isEmail = exports.isEmail = function isEmail(value) {
 
 var isFunction = exports.isFunction = function isFunction(value) {
   try {
-    return value.constructor && value.constructor === Function || typeof value === "function";
+    return isset(value) && value.constructor && value.constructor === Function || typeof value === "function";
   } catch (e) {
     console.error(e);
   }
@@ -165,10 +127,10 @@ var isFunction = exports.isFunction = function isFunction(value) {
 };
 
 var isInt = exports.isInt = function isInt(value) {
-  return Boolean(value.length && !isNaN(Number(value)));
+  return Boolean(isset(value) && value.length && !isNaN(Number(value)));
 };
 var isStr = exports.isStr = function isStr(value) {
-  return isInt(value) === false && isString(value);
+  return Boolean(isset(value) && isInt(value) === false && isString(value));
 };
 
 // Field type
@@ -201,6 +163,9 @@ var isTextareaElement = exports.isTextareaElement = function isTextareaElement(f
 };
 var isCheckableElement = exports.isCheckableElement = function isCheckableElement(field) {
   return isInputElement(field) && (isCheckboxElement(field) || isRadioElement(field));
+};
+var isFileInputElement = exports.isFileInputElement = function isFileInputElement(field) {
+  return isInputElement(field) && field.type === "file";
 };
 
 // Field state
@@ -255,6 +220,55 @@ exports.default = {
     capitalize: capitalize
   }
 };
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _helpers = __webpack_require__(0);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var BaseRule = function () {
+  function BaseRule(rule, key) {
+    var value = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : undefined;
+    var constraints = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+    var HTMLField = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
+
+    _classCallCheck(this, BaseRule);
+
+    this.rule = rule;
+    this.key = key;
+    this.value = value;
+    this.constraints = constraints;
+    this.HTMLField = HTMLField;
+  }
+
+  _createClass(BaseRule, [{
+    key: '_hasHTMLField',
+    value: function _hasHTMLField() {
+      return this.HTMLField && this.HTMLField.length;
+    }
+  }, {
+    key: '_isset',
+    value: function _isset() {
+      return (0, _helpers.isset)(this.value);
+    }
+  }]);
+
+  return BaseRule;
+}();
+
+exports.default = BaseRule;
 
 /***/ }),
 /* 2 */
@@ -329,7 +343,7 @@ var _ImageRule = __webpack_require__(10);
 
 var _ImageRule2 = _interopRequireDefault(_ImageRule);
 
-var _helpers = __webpack_require__(1);
+var _helpers = __webpack_require__(0);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -354,8 +368,8 @@ var Formr = function () {
 
     this._isHTMLFormElement = false;
     this._data = data;
+    this._excluded = [];
     this._settings = _extends({}, DEFAULT_SETTINGS, settings);
-    this._values = {};
     this._errors = {};
     this._rules = {};
     this._observers = {};
@@ -389,7 +403,6 @@ var Formr = function () {
 
     this._initData();
     this._form = this._isHTMLFormElement ? data : null;
-    this._fillValues();
 
     if (this._settings.messages) this.messages(this._settings.message);
   }
@@ -418,20 +431,28 @@ var Formr = function () {
       return this;
     }
   }, {
+    key: 'excluded',
+    value: function excluded() {
+      if (arguments && arguments.length) this._excluded = this._excluded.concat(Array.from(arguments));
+      return this;
+    }
+  }, {
     key: 'required',
     value: function required() {
-      if (arguments.length > 1) {
-        for (var i = 0; i < arguments.length; i++) {
-          this.required(arguments[i]);
+      if (arguments && arguments.length) {
+        if (arguments.length > 1) {
+          for (var i = 0; i < arguments.length; i++) {
+            this.required(arguments[i]);
+          }
+        } else {
+          var _arguments = Array.prototype.slice.call(arguments),
+              key = _arguments[0];
+
+          var value = this._getValue(key);
+          this._addRule(key, 'required');
+
+          if (!this._validate('required', key, value)) this._addError(key, 'required');
         }
-      } else {
-        var _arguments = Array.prototype.slice.call(arguments),
-            key = _arguments[0];
-
-        var value = this._getValue(key);
-        this._addRule(key, 'required');
-
-        if (!this._validate('required', key, value)) this._addError(key, 'required');
       }
       return this;
     }
@@ -615,8 +636,11 @@ var Formr = function () {
     value: function submit(callback) {
       var _this3 = this;
 
+      var preventDefault = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
       if (this._isHTMLFormElement && this._form) {
         this._form.addEventListener('submit', function (e) {
+          if (preventDefault) e.preventDefault();
           if (_this3._settings.validate_before_submit === true) _this3.validateAll();
           callback(e);
         });
@@ -666,7 +690,10 @@ var Formr = function () {
   }, {
     key: '_getValue',
     value: function _getValue(key) {
-      if (this._values[key] !== undefined) return this._values[key];else if (this._data[key] !== undefined) return this._data[key].value;else throw new Error('Key \'' + key + '\' does not exists !');
+      var field = this._data[key];
+      if ((0, _helpers.isset)(field)) {
+        if ((0, _helpers.isFileInputElement)(field)) return field.files;else if ((0, _helpers.isCheckableElement)(field)) return field.checked;else if ((0, _helpers.isInputElement)(field) || (0, _helpers.isSelectElement)(field) || (0, _helpers.isTextareaElement)(field)) return field.value;
+      } else throw new Error('Key \'' + key + '\' does not exists !');
     }
   }, {
     key: '_getHtmlElement',
@@ -678,15 +705,6 @@ var Formr = function () {
     key: '_setValue',
     value: function _setValue(key, value) {
       if (this._data[key] !== undefined) this._data[key].value = value;
-    }
-  }, {
-    key: '_fillValues',
-    value: function _fillValues() {
-      if (Object.keys(this._values).length) return;
-      for (var i = 0; i < this._data.length; i++) {
-        var item = this._data[i];
-        if (item.name !== undefined && this._values[item.name] === undefined) this._values[item.name] = item.value;
-      }
     }
   }, {
     key: '_addError',
@@ -728,17 +746,19 @@ var Formr = function () {
     value: function _callMultipleArgsMethod(rule_name) {
       var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
 
-      if (args.length > 1) {
-        for (var i = 0; i < args.length; i++) {
-          this[rule_name](args[i]);
-        }
-      } else {
-        var _args = _slicedToArray(args, 1),
-            key = _args[0];
+      if (args && args.length) {
+        if (args.length > 1) {
+          for (var i = 0; i < args.length; i++) {
+            this[rule_name](args[i]);
+          }
+        } else {
+          var _args = _slicedToArray(args, 1),
+              key = _args[0];
 
-        var value = this._getValue(key);
-        this._addRule(key, rule_name);
-        if (!this._validate(rule_name, key, value)) this._addError(key, rule_name);
+          var value = this._getValue(key);
+          this._addRule(key, rule_name);
+          if (!this._validate(rule_name, key, value)) this._addError(key, rule_name);
+        }
       }
       return this;
     }
@@ -747,7 +767,9 @@ var Formr = function () {
     value: function _validate(rule, key, value) {
       var constraints = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
 
-      if (this._isOptional(key) && !this._getValue(key).length) return true;
+      if (this._isOptional(key)) {
+        if (!this._getValue(key) || !this._getValue(key).length) return true;
+      }
       var ValidatorClass = this._validators[rule] || null;
       if (!ValidatorClass) return true;
       try {
@@ -775,8 +797,6 @@ var Formr = function () {
     key: '_isOptional',
     value: function _isOptional(key) {
       var condition = !this._isRequired(key);
-      // let field = this._getHtmlElement(key)
-      // let value = this._getValue(key)
 
       return condition;
     }
@@ -786,7 +806,6 @@ var Formr = function () {
       var reset_errors = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
       if (reset_errors) this.resetErrors();
-      this._updateValues();
       for (var key in this._rules) {
         this._applyRule(key);
       }
@@ -799,14 +818,6 @@ var Formr = function () {
       if (!rules || !Object.keys(rules).length) return;
       for (var name in rules) {
         this[name].apply(this, [key].concat(_toConsumableArray(rules[name])));
-      }
-    }
-  }, {
-    key: '_updateValues',
-    value: function _updateValues() {
-      for (var field in this._data) {
-        var f = this._data[field];
-        if ((0, _helpers.isInputElement)(f) || (0, _helpers.isSelectElement)(f)) this._values[field] = f.value;else if ((0, _helpers.isCheckableElement)(f)) this._values[field] = f.checked;
       }
     }
   }, {
@@ -848,11 +859,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _BaseRule2 = __webpack_require__(0);
+var _BaseRule2 = __webpack_require__(1);
 
 var _BaseRule3 = _interopRequireDefault(_BaseRule2);
 
-var _helpers = __webpack_require__(1);
+var _helpers = __webpack_require__(0);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -874,9 +885,8 @@ var RequiredRule = function (_BaseRule) {
   _createClass(RequiredRule, [{
     key: 'validate',
     value: function validate() {
-      var v = true;
-      if ((0, _helpers.isStr)(this.value)) v = Boolean(this.value.trim().length > 0);
-      return this.value !== undefined && v;
+      if (!this._isset()) return false;
+      return Boolean(this.value.length > 0);
     }
   }]);
 
@@ -898,11 +908,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _BaseRule2 = __webpack_require__(0);
+var _BaseRule2 = __webpack_require__(1);
 
 var _BaseRule3 = _interopRequireDefault(_BaseRule2);
 
-var _helpers = __webpack_require__(1);
+var _helpers = __webpack_require__(0);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -924,7 +934,8 @@ var StringRule = function (_BaseRule) {
   _createClass(StringRule, [{
     key: 'validate',
     value: function validate() {
-      return this.value !== undefined && (0, _helpers.isString)(this.value);
+      if (!this._isset()) return false;
+      return (0, _helpers.isString)(this.value);
     }
   }]);
 
@@ -946,11 +957,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _BaseRule2 = __webpack_require__(0);
+var _BaseRule2 = __webpack_require__(1);
 
 var _BaseRule3 = _interopRequireDefault(_BaseRule2);
 
-var _helpers = __webpack_require__(1);
+var _helpers = __webpack_require__(0);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -972,8 +983,9 @@ var NumberRule = function (_BaseRule) {
   _createClass(NumberRule, [{
     key: 'validate',
     value: function validate() {
+      if (!this._isset()) return false;
       if ((0, _helpers.isInt)(this.value)) this.value = Number(this.value);
-      return this.value !== undefined && (0, _helpers.isNumber)(this.value);
+      return (0, _helpers.isNumber)(this.value);
     }
   }]);
 
@@ -995,11 +1007,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _BaseRule2 = __webpack_require__(0);
+var _BaseRule2 = __webpack_require__(1);
 
 var _BaseRule3 = _interopRequireDefault(_BaseRule2);
 
-var _helpers = __webpack_require__(1);
+var _helpers = __webpack_require__(0);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1021,7 +1033,8 @@ var BooleanRule = function (_BaseRule) {
   _createClass(BooleanRule, [{
     key: 'validate',
     value: function validate() {
-      return this.value !== undefined && (0, _helpers.isBoolean)(this.value);
+      if (!this._isset()) return false;
+      return (0, _helpers.isBoolean)(this.value);
     }
   }]);
 
@@ -1043,11 +1056,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _BaseRule2 = __webpack_require__(0);
+var _BaseRule2 = __webpack_require__(1);
 
 var _BaseRule3 = _interopRequireDefault(_BaseRule2);
 
-var _helpers = __webpack_require__(1);
+var _helpers = __webpack_require__(0);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1069,7 +1082,8 @@ var EmailRule = function (_BaseRule) {
   _createClass(EmailRule, [{
     key: 'validate',
     value: function validate() {
-      return this.value !== undefined && (0, _helpers.isEmail)(this.value);
+      if (!this._isset()) return false;
+      return (0, _helpers.isEmail)(this.value);
     }
   }]);
 
@@ -1091,11 +1105,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _BaseRule2 = __webpack_require__(0);
+var _BaseRule2 = __webpack_require__(1);
 
 var _BaseRule3 = _interopRequireDefault(_BaseRule2);
 
-var _helpers = __webpack_require__(1);
+var _helpers = __webpack_require__(0);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1117,6 +1131,7 @@ var CheckedRule = function (_BaseRule) {
   _createClass(CheckedRule, [{
     key: 'validate',
     value: function validate(expected) {
+      if (!this._isset()) return false;
       return this._hasHTMLField() && (0, _helpers.isCheckboxElement)(this.HTMLField) ? this.HTMLField.checked === expected : this.value == expected;
     }
   }]);
@@ -1139,7 +1154,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _BaseRule2 = __webpack_require__(0);
+var _BaseRule2 = __webpack_require__(1);
 
 var _BaseRule3 = _interopRequireDefault(_BaseRule2);
 
@@ -1168,8 +1183,11 @@ var ImageRule = function (_BaseRule) {
     value: function validate() {
       var mimetypes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.mimetypes;
 
-      var re = new RegExp(mimetypes.join('|'), 'i');
-      return this.value !== undefined && this.value.type && re.test(this.value.type);
+      if (!this._isset()) return false;
+      var re = new RegExp(mimetypes.join('|'), 'gi');
+      return Boolean(this.value.constructor === FileList && this.value.length && Array.from(this.value).some(function (item) {
+        return re.test(item.type);
+      }));
     }
   }]);
 

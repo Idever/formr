@@ -1,3 +1,5 @@
+import { isset } from '../../lib/helpers'
+
 export default class BaseRule {
 
   constructor (rule, key, value = undefined, constraints = [], HTMLField = null) {
@@ -10,6 +12,10 @@ export default class BaseRule {
 
   _hasHTMLField () {
     return this.HTMLField && this.HTMLField.length
+  }
+
+  _isset () {
+    return isset(this.value)
   }
 
 }

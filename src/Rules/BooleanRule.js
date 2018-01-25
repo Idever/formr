@@ -4,7 +4,8 @@ import { isBoolean } from '../../lib/helpers'
 export default class BooleanRule extends BaseRule {
 
   validate () {
-    return this.value !== undefined && isBoolean(this.value)
+    if (!this._isset()) return false
+    return isBoolean(this.value)
   }
 
 }

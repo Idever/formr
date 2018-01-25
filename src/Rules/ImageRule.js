@@ -8,8 +8,13 @@ export default class ImageRule extends BaseRule {
   }
 
   validate (mimetypes = this.mimetypes) {
-    const re = new RegExp(mimetypes.join('|'), 'i')
-    return this.value !== undefined && this.value.type && re.test(this.value.type)
+    if (!this._isset()) return false
+    const re = new RegExp(mimetypes.join('|'), 'gi')
+    return Boolean(
+      this.value.constructor === FileList && 
+      this.value.length && 
+      Array.from(this.value).some(item => re.test(item.type))
+    )
   }
 
 }

@@ -13,7 +13,7 @@
       .between('title', 1, 5)
       .between('content', 10, 2000)
       .checked('published', true)
-      .image('image', ['png'])
+      .image('image', ['png', 'jpg', 'jpeg'])
       .observe({field: 'title', validate: false}, console.log)
       .submit(function (e) {
         e.preventDefault()

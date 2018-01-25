@@ -4,7 +4,8 @@ import { isString } from '../../lib/helpers'
 export default class StringRule extends BaseRule {
 
   validate () {
-    return this.value !== undefined && isString(this.value)
+    if (!this._isset()) return false
+    return isString(this.value)
   }
 
 }

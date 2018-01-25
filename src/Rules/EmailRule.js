@@ -4,7 +4,8 @@ import { isEmail } from '../../lib/helpers'
 export default class EmailRule extends BaseRule {
 
   validate () {
-    return this.value !== undefined && isEmail(this.value)
+    if (!this._isset()) return false
+    return isEmail(this.value)
   }
 
 }

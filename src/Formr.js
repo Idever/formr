@@ -5,7 +5,18 @@ import BooleanRule from './Rules/BooleanRule'
 import EmailRule from './Rules/EmailRule'
 import CheckedRule from './Rules/CheckedRule'
 import ImageRule from './Rules/ImageRule'
-import { isInt, isStr, isNumber, isFunction, isInputElement, isCheckableElement, isSelectElement } from '../lib/helpers'
+import { 
+  isset, 
+  isInt, 
+  isStr, 
+  isNumber, 
+  isFunction, 
+  isInputElement, 
+  isCheckableElement, 
+  isSelectElement, 
+  isTextareaElement,
+  isFileInputElement
+} from '../lib/helpers'
 
 const DEFAULT_SETTINGS = {
   debug: false,
@@ -20,8 +31,8 @@ export default class Formr {
 
     this._isHTMLFormElement = false
     this._data = data
+    this._excluded = []
     this._settings = { ...DEFAULT_SETTINGS, ...settings }
-    this._values = {}
     this._errors = {}
     this._rules = {}
     this._observers = {}
@@ -55,7 +66,6 @@ export default class Formr {
 
     this._initData()
     this._form = this._isHTMLFormElement ? data : null
-    this._fillValues()
 
     if (this._settings.messages) this.messages(this._settings.message)
   }
@@ -77,17 +87,24 @@ export default class Formr {
     return this
   }
 
+  excluded () {
+    if (arguments && arguments.length) this._excluded = this._excluded.concat(Array.from(arguments))
+    return this
+  }
+
   required () {
-    if (arguments.length > 1) {
-      for (let i = 0; i < arguments.length; i++) {
-        this.required(arguments[i])
+    if (arguments && arguments.length) {
+      if (arguments.length > 1) {
+        for (let i = 0; i < arguments.length; i++) {
+          this.required(arguments[i])
+        }
+      } else {
+        const [key, ] = arguments
+        const value = this._getValue(key)
+        this._addRule(key, 'required')
+        
+        if (!this._validate('required', key, value)) this._addError(key, 'required')
       }
-    } else {
-      const [key, ] = arguments
-      const value = this._getValue(key)
-      this._addRule(key, 'required')
-      
-      if (!this._validate('required', key, value)) this._addError(key, 'required')
     }
     return this
   }
@@ -240,9 +257,10 @@ export default class Formr {
     return this
   }
 
-  submit (callback) {
+  submit (callback, preventDefault = true) {
     if (this._isHTMLFormElement && this._form) {
       this._form.addEventListener('submit', e => {
+        if (preventDefault) e.preventDefault()
         if (this._settings.validate_before_submit === true)
           this.validateAll()
         callback(e)
@@ -282,9 +300,15 @@ export default class Formr {
   }
 
   _getValue (key) {
-    if (this._values[key] !== undefined) return this._values[key]
-    else if (this._data[key] !== undefined) return this._data[key].value
-    else throw new Error(`Key '${key}' does not exists !`)
+    const field = this._data[key]
+    if (isset(field)) {
+      if (isFileInputElement(field))
+        return field.files
+      else if (isCheckableElement(field))
+        return field.checked
+      else if (isInputElement(field) || isSelectElement(field) || isTextareaElement(field))
+        return field.value
+    } else throw new Error(`Key '${key}' does not exists !`)
   }
 
   _getHtmlElement (key) {
@@ -294,15 +318,6 @@ export default class Formr {
 
   _setValue (key, value) {
     if (this._data[key] !== undefined) this._data[key].value = value
-  }
-
-  _fillValues () {
-    if (Object.keys(this._values).length) return
-    for (let i = 0; i < this._data.length; i++) {
-      let item = this._data[i]
-      if (item.name !== undefined && this._values[item.name] === undefined)
-        this._values[item.name] = item.value
-      }
   }
 
   _addError (key, type, repl = null) {
@@ -337,21 +352,26 @@ export default class Formr {
   }
 
   _callMultipleArgsMethod (rule_name, args = []) {
-    if (args.length > 1) {
-      for (let i = 0; i < args.length; i++) {
-        this[rule_name](args[i])
+    if (args && args.length) {
+      if (args.length > 1) {
+        for (let i = 0; i < args.length; i++) {
+          this[rule_name](args[i])
+        }
+      } else {
+        const [key,] = args
+        const value = this._getValue(key)
+        this._addRule(key, rule_name)
+        if (!this._validate(rule_name, key, value)) this._addError(key, rule_name)
       }
-    } else {
-      const [key,] = args
-      const value = this._getValue(key)
-      this._addRule(key, rule_name)
-      if (!this._validate(rule_name, key, value)) this._addError(key, rule_name)
     }
     return this
   }
 
   _validate (rule, key, value, constraints = []) {
-    if (this._isOptional(key) && !this._getValue(key).length) return true
+    if (this._isOptional(key)) {
+      if (!this._getValue(key) || !this._getValue(key).length)
+        return true
+    }
     const ValidatorClass = this._validators[rule] || null
     if (!ValidatorClass) return true
     try {
@@ -374,15 +394,12 @@ export default class Formr {
 
   _isOptional (key) {
     let condition = !this._isRequired(key)
-    // let field = this._getHtmlElement(key)
-    // let value = this._getValue(key)
 
     return condition
   }
 
   _applyRules (reset_errors = false) {
     if (reset_errors) this.resetErrors()
-    this._updateValues()
     for (let key in this._rules) {
       this._applyRule(key)
     }
@@ -394,16 +411,6 @@ export default class Formr {
     if (!rules || !Object.keys(rules).length) return
     for (let name in rules) {
       this[name].apply(this, [key, ...rules[name]])
-    }
-  }
-
-  _updateValues () {
-    for (let field in this._data) {
-      let f = this._data[field]
-      if (isInputElement(f) || isSelectElement(f))
-        this._values[field] = f.value
-      else if (isCheckableElement(f))
-        this._values[field] = f.checked
     }
   }
 
