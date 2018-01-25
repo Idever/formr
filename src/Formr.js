@@ -5,7 +5,7 @@ import BooleanRule from './Rules/BooleanRule'
 import EmailRule from './Rules/EmailRule'
 import CheckedRule from './Rules/CheckedRule'
 import ImageRule from './Rules/ImageRule'
-import { isInt, isStr, isNumber, isFunction } from '../lib/helpers'
+import { isInt, isStr, isNumber, isFunction, isInputElement, isCheckableElement, isSelectElement } from '../lib/helpers'
 
 const DEFAULT_SETTINGS = {
   debug: false,
@@ -243,7 +243,8 @@ export default class Formr {
   submit (callback) {
     if (this._isHTMLFormElement && this._form) {
       this._form.addEventListener('submit', e => {
-        if (this._settings.validate_before_submit) this._applyRules(true)
+        if (this._settings.validate_before_submit === true)
+          this.validateAll()
         callback(e)
       })
     }
@@ -397,8 +398,12 @@ export default class Formr {
   }
 
   _updateValues () {
-    for (var field in this._data) {
-      this._values[field] = this._data[field].value
+    for (let field in this._data) {
+      let f = this._data[field]
+      if (isInputElement(f) || isSelectElement(f))
+        this._values[field] = f.value
+      else if (isCheckableElement(f))
+        this._values[field] = f.checked
     }
   }
 

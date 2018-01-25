@@ -617,7 +617,7 @@ var Formr = function () {
 
       if (this._isHTMLFormElement && this._form) {
         this._form.addEventListener('submit', function (e) {
-          if (_this3._settings.validate_before_submit) _this3._applyRules(true);
+          if (_this3._settings.validate_before_submit === true) _this3.validateAll();
           callback(e);
         });
       }
@@ -805,7 +805,8 @@ var Formr = function () {
     key: '_updateValues',
     value: function _updateValues() {
       for (var field in this._data) {
-        this._values[field] = this._data[field].value;
+        var f = this._data[field];
+        if ((0, _helpers.isInputElement)(f) || (0, _helpers.isSelectElement)(f)) this._values[field] = f.value;else if ((0, _helpers.isCheckableElement)(f)) this._values[field] = f.checked;
       }
     }
   }, {
