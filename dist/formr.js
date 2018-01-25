@@ -172,48 +172,48 @@ var isStr = exports.isStr = function isStr(value) {
 };
 
 // Field type
-var isInputElement = function isInputElement(field) {
+var isInputElement = exports.isInputElement = function isInputElement(field) {
   return field.constructor === HTMLInputElement;
 };
-var isTextInputElement = function isTextInputElement(field) {
+var isTextInputElement = exports.isTextInputElement = function isTextInputElement(field) {
   return isInputElement(field) && field.type === "text";
 };
-var isNumberInputElement = function isNumberInputElement(field) {
+var isNumberInputElement = exports.isNumberInputElement = function isNumberInputElement(field) {
   return isInputElement(field) && field.type === "number";
 };
-var isEmailInputElement = function isEmailInputElement(field) {
+var isEmailInputElement = exports.isEmailInputElement = function isEmailInputElement(field) {
   return isInputElement(field) && field.type === "email";
 };
-var isDateInputElement = function isDateInputElement(field) {
+var isDateInputElement = exports.isDateInputElement = function isDateInputElement(field) {
   return isInputElement(field) && field.type === "date";
 };
-var isCheckboxElement = function isCheckboxElement(field) {
+var isCheckboxElement = exports.isCheckboxElement = function isCheckboxElement(field) {
   return isInputElement(field) && field.type === "checkbox";
 };
-var isRadioElement = function isRadioElement(field) {
+var isRadioElement = exports.isRadioElement = function isRadioElement(field) {
   return isInputElement(field) && field.type === "radio";
 };
-var isSelectElement = function isSelectElement(field) {
+var isSelectElement = exports.isSelectElement = function isSelectElement(field) {
   return field.constructor === HTMLSelectElement;
 };
-var isTextareaElement = function isTextareaElement(field) {
+var isTextareaElement = exports.isTextareaElement = function isTextareaElement(field) {
   return field.constructor === HTMLTextAreaElement;
 };
-var isCheckableElement = function isCheckableElement(field) {
+var isCheckableElement = exports.isCheckableElement = function isCheckableElement(field) {
   return isInput && (isCheckboxElement || isRadioElement);
 };
 
 // Field state
-var isFieldChecked = function isFieldChecked(field) {
+var isFieldChecked = exports.isFieldChecked = function isFieldChecked(field) {
   return isCheckboxElement(field) && isRadioElement(field) && field.checked === true;
 };
-var isFieldUnchecked = function isFieldUnchecked(field) {
+var isFieldUnchecked = exports.isFieldUnchecked = function isFieldUnchecked(field) {
   return isCheckboxElement(field) && isRadioElement(field) && field.checked === false;
 };
-var isFieldSelected = function isFieldSelected(field) {
+var isFieldSelected = exports.isFieldSelected = function isFieldSelected(field) {
   return isSelectElement(field) && field.selected === true;
 };
-var isFieldUnselected = function isFieldUnselected(field) {
+var isFieldUnselected = exports.isFieldUnselected = function isFieldUnselected(field) {
   return isSelectElement(field) && field.selected === false;
 };
 

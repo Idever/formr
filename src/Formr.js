@@ -408,7 +408,7 @@ export default class Formr {
   }
 
   _isFormElement (item) {
-    if (!this._isHTMLFormElement || !item.constructor) return false
+    if (!this._isHTMLFormElement || !item.constructor) return false 
     return [
       HTMLInputElement,
       HTMLTextAreaElement,
