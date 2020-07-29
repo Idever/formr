@@ -1,5 +1,5 @@
 {
-  "name": "formr",
+  "name": "@betaweb/formr",
   "version": "1.0.0",
   "description": "A fluent browser-side JavaScript form validator",
   "main": "index.js",
