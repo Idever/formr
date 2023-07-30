@@ -14,7 +14,7 @@
       .between('content', 10, 2000)
       .checked('published', true)
       .image('image', ['png', 'jpg', 'jpeg'])
-      .observe({field: 'title', validate: false}, console.log)
+      .observe({field: 'title', validate: false}, console.log).between2('dr', 1, 5)
       .submit(function (e) {
         e.preventDefault()
   

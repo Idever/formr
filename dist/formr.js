@@ -390,6 +390,7 @@ var Formr = function () {
       'email': 'Le format de l\'adresse email est invalide',
       'length': 'Ce champ doit faire entre :min et :max caractères',
       'between': 'Ce champ doit être compris entre :min et :max',
+      'between2': 'Between 2 Error!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!',
       'under': 'La valeur de ce champ doit être:strict inférieure à :max',
       'above': 'La valeur de ce champ doit être:strict supérieure à :min',
       'same': 'La valeur ":value" est différente celle attendue ":expected"',
@@ -549,6 +550,19 @@ var Formr = function () {
       this._addRule(key, 'between', [min, max]);
 
       if ((0, _helpers.isStr)(value) && (value.length < min || value.length > max) || _isInt && (value < min || value > max)) this._addError(key, _isInt ? 'between' : 'length', { ':min': min, ':max': max });
+      return this;
+    }
+  }, {
+    key: 'between2',
+    value: function between2(key) {
+      var min = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+      var max = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+
+      var value = this._getValue(key);
+      var _isInt = (0, _helpers.isInt)(value);
+      this._addRule(key, 'between2', [min, max]);
+
+      if ((0, _helpers.isStr)(value) && (value.length < min || value.length > max) || _isInt && (value < min || value > max)) this._addError(key, _isInt ? 'between2' : 'length', { ':min': min, ':max': max });
       return this;
     }
   }, {

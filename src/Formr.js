@@ -53,6 +53,7 @@ export default class Formr {
       'email': 'Le format de l\'adresse email est invalide',
       'length': 'Ce champ doit faire entre :min et :max caractères',
       'between': 'Ce champ doit être compris entre :min et :max',
+      'between2': 'Between 2 Error!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!',
       'under': 'La valeur de ce champ doit être:strict inférieure à :max',
       'above': 'La valeur de ce champ doit être:strict supérieure à :min',
       'same': 'La valeur ":value" est différente celle attendue ":expected"',
@@ -184,6 +185,19 @@ export default class Formr {
       (isStr(value) && (value.length < min || value.length > max)) ||
       (_isInt && (value < min || value > max))
     ) this._addError(key, _isInt ? 'between' : 'length', {':min': min, ':max': max})
+    return this
+  }
+
+  
+  between2 (key, min = 0, max = 0) {
+    const value = this._getValue(key)
+    const _isInt = isInt(value)
+    this._addRule(key, 'between2', [min, max])
+
+    if (
+      (isStr(value) && (value.length < min || value.length > max)) ||
+      (_isInt && (value < min || value > max))
+    ) this._addError(key, _isInt ? 'between2' : 'length', {':min': min, ':max': max})
     return this
   }
 
